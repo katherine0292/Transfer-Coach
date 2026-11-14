@@ -1,0 +1,803 @@
+<title>Transfer Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+/* Layout: a white sheet on cool grey with a fixed chapter rail; one violet accent taken from the poster's glowing hand, a leaf green for state; no large black areas. */
+:root{
+  --bg:#EEE9E3; --paper:#FFFFFF; --paper-2:#FBF7F2; --ink:#211A16; --ink-2:#665A52; --ink-3:#A0948B; --line:#E9E1D8; --line-2:#D8CDC2;
+  --acc:#F07F1E; --acc-2:#FFB877; --acc-3:#FFD4A8; --acc-soft:#FFF0E0; --acc-ink:#B34F08;
+  --leaf:#3D8B5C; --leaf-soft:#E8F3EC; --amber:#B5852E; --rose:#C2453A;
+  --deep:#2B211C; --deep-2:#8A4A14;
+  --f:"Inter Tight","Noto Sans SC",-apple-system,"PingFang SC","Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,.8,.2,1); --r:18px; --wrap:1180px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E0B09; --paper:#17120F; --paper-2:#1D1713; --ink:#F6EFE8; --ink-2:#B7A99E; --ink-3:#7D7066; --line:#2B231D; --line-2:#41362E;
+  --acc:#FF9440; --acc-2:#C9651A; --acc-3:#FFC38A; --acc-soft:#2E1F12; --acc-ink:#FFB877;
+  --leaf:#6CC08D; --leaf-soft:#14241B; --amber:#E0B25E; --rose:#F0806F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E0B09; --paper:#17120F; --paper-2:#1D1713; --ink:#F6EFE8; --ink-2:#B7A99E; --ink-3:#7D7066; --line:#2B231D; --line-2:#41362E;
+  --acc:#FF9440; --acc-2:#C9651A; --acc-3:#FFC38A; --acc-soft:#2E1F12; --acc-ink:#FFB877;
+  --leaf:#6CC08D; --leaf-soft:#14241B; --amber:#E0B25E; --rose:#F0806F; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15.5px;line-height:1.65;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:90;background:var(--paper)}
+img,video{max-width:100%;display:block}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}
+h1,h2,h3,h4,p,ul,ol,figure,dl{margin:0}
+h1,h2,h3{font-weight:300;letter-spacing:-.02em;text-wrap:balance}
+html:not(.en) h1,html:not(.en) h2,html:not(.en) h3{letter-spacing:-.005em;font-weight:400;word-break:keep-all;overflow-wrap:anywhere}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);font-weight:500;display:block}
+html:not(.en) .lbl{letter-spacing:.08em}
+span.en{display:none}
+html.en span.en{display:inline}
+html.en span.zh{display:none}
+code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.88em}
+
+/* sheet */
+.sheet{margin:0 auto;background:var(--paper);max-width:1480px;border-radius:0 0 28px 28px;overflow:clip;position:relative}
+@media (min-width:900px){.sheet{margin:14px 14px 0;border-radius:28px;max-width:none}}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+@media (min-width:1280px){.wrap{padding-left:200px;padding-right:56px;max-width:1440px}}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:70;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.top .in{display:flex;align-items:center;gap:14px;height:60px;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.word{font-weight:600;letter-spacing:.16em;font-size:14px;text-decoration:none}
+.menu-btn{display:flex;align-items:center;gap:10px;font-size:13px}
+.menu-btn i{display:grid;gap:4px;width:22px}.menu-btn i b{height:1.5px;background:currentColor;display:block}.menu-btn i b:last-child{width:14px}
+.top .sp{flex:1}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:99px;padding:3px}
+.seg button{padding:5px 12px;border-radius:99px;font-size:12.5px;color:var(--ink-2);white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.prog{position:absolute;left:0;bottom:0;height:2px;width:100%;background:linear-gradient(90deg,var(--acc),var(--acc-3));transform-origin:0 50%;transform:scaleX(var(--p,0))}
+
+/* rail */
+.rail{position:fixed;left:30px;top:50%;transform:translateY(-50%);z-index:60;display:none;transition:opacity .4s var(--ease)}
+@media (min-width:1280px){.rail{display:block}}
+.rail ol{list-style:none;margin:0;padding:0 0 0 16px;display:grid;gap:7px;border-left:1px solid var(--line-2);position:relative}
+.rail li button{font-size:12.5px;color:var(--ink-3);transition:color .3s;text-align:left;padding:1px 0}
+.rail li button:hover{color:var(--ink)}
+.rail li.on button{color:var(--ink);font-weight:500}
+.rail .dot{position:absolute;left:-5px;top:0;width:9px;height:9px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 22%,transparent);transition:transform .55s var(--ease)}
+.rail.away{opacity:0;pointer-events:none}
+
+/* menu */
+.menu{position:fixed;inset:0;z-index:95;background:color-mix(in srgb,var(--paper) 95%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);padding:max(22px,env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) 22px max(22px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;clip-path:circle(0% at 60px 32px);transition:clip-path .7s var(--ease);visibility:hidden;overflow:auto}
+.menu.open{clip-path:circle(150% at 60px 32px);visibility:visible}
+.menu .mh{display:flex;justify-content:space-between;align-items:center;height:40px}
+.menu .mh button{border:1px solid var(--line-2);border-radius:99px;padding:6px 14px;font-size:13px}
+.menu ol{list-style:none;margin:30px 0 auto;padding:0;display:grid;gap:2px;max-width:560px}
+.menu li button{display:flex;align-items:baseline;gap:16px;font-size:clamp(18px,2vw,24px);font-weight:400;color:var(--ink-2);padding:6px 0;text-align:left}
+.menu li button small{color:var(--ink-3);font-size:12px;min-width:24px}
+.menu li button:hover{color:var(--acc-ink)}
+
+/* banner */
+.banner{position:relative;overflow:hidden;background:#150F26;line-height:0}
+.banner img{width:100%;height:auto;aspect-ratio:1774/887;object-fit:cover;transform:scale(1.04);transition:transform .25s linear;will-change:transform}
+.banner canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.banner .glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(260px circle at var(--mx,70%) var(--my,30%),rgba(190,160,255,.38),transparent 70%);mix-blend-mode:screen;opacity:0;transition:opacity .4s}
+.banner:hover .glow{opacity:1}
+.pill{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--ink);border-radius:99px;padding:10px 18px;font-size:12.5px;letter-spacing:.05em;font-weight:500;text-decoration:none;transition:transform .25s var(--ease)}
+.pill:hover{transform:translateY(-2px)}
+.pill.dark{background:var(--ink);color:var(--paper)}
+.ctas{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.intro{padding-top:clamp(34px,4.4vw,60px)}
+.intro h1{font-size:clamp(26px,3.2vw,42px);font-weight:400;line-height:1.2;margin:10px 0 clamp(26px,3.4vw,42px);max-width:24em}
+html.en .intro h1{font-weight:300}
+.meta2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(24px,5vw,72px)}
+.meta2>div{border-top:1px solid var(--line-2);padding:14px 0 20px;min-width:0}
+.meta2 .lbl{margin-bottom:6px}
+.meta2 p,.meta2 li{font-size:15px;line-height:1.55}
+.meta2 ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.meta2 li::before{content:"— ";color:var(--acc)}
+
+/* chapters */
+section.ch{position:relative;padding-block:clamp(40px,4.8vw,70px)}
+section.ch.alt{background:var(--paper-2)}
+.head{display:grid;gap:10px;margin-bottom:clamp(22px,2.8vw,36px)}
+.head .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.head h2{font-size:clamp(24px,2.6vw,35px);line-height:1.22;max-width:28ch;position:relative;padding-bottom:14px}
+html:not(.en) .head h2{line-height:1.38;max-width:24em;font-size:clamp(22px,2.4vw,31px)}
+.head h2::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:64px;background:linear-gradient(90deg,var(--acc),var(--acc-3));transform-origin:0 50%}
+.js .head h2::after{transform:scaleX(0);transition:transform 1s var(--ease)}
+.js .head.in h2::after{transform:scaleX(1)}
+.head .lede{font-size:15.5px;color:var(--ink-2);max-width:70ch;margin-top:4px}
+.blk{margin-top:clamp(36px,4.6vw,64px)}
+.blk:first-child{margin-top:0}
+.h2{font-size:clamp(21px,2.2vw,29px);font-weight:400;letter-spacing:-.01em;line-height:1.32;margin:8px 0 14px;max-width:28em}
+.para{font-size:clamp(15px,1.2vw,16.5px);color:var(--ink-2);line-height:1.75;max-width:74ch}
+.para+.para{margin-top:12px}
+.para b{color:var(--ink);font-weight:500}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(18px,3vw,44px)}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,1.8vw,22px)}
+.g2>*,.g3>*{min-width:0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:clamp(18px,2vw,24px);min-width:0}
+.k{margin-bottom:10px}
+.insight{font-size:clamp(18px,1.8vw,22px);font-weight:300;letter-spacing:-.01em;line-height:1.5}
+html:not(.en) .insight{font-weight:400}
+.qband{color:#fff;padding-block:clamp(44px,5.5vw,76px);background:linear-gradient(120deg,var(--deep) 0%,var(--deep-2) 62%,#9a5fd8 100%);position:relative;overflow:hidden}
+.qband::after{content:"";position:absolute;right:-8%;top:-60%;width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(231,184,244,.5),transparent 68%);pointer-events:none}
+.qband .lbl{color:rgba(255,255,255,.75)}
+.qband h2{font-size:clamp(21px,2.4vw,32px);font-weight:400;line-height:1.4;margin:12px 0 16px;max-width:26em;letter-spacing:-.01em}
+.qband p{color:rgba(255,255,255,.8);font-size:clamp(14.5px,1.2vw,16.5px);max-width:60ch}
+
+/* flow stepper */
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:0;position:relative}
+.flow li{position:relative;padding:34px 16px 0 0;min-width:0}
+.flow li::before{content:"";position:absolute;left:0;right:0;top:11px;height:2px;background:var(--line-2)}
+.flow li:last-child::before{background:linear-gradient(90deg,var(--line-2),transparent)}
+.flow li i{position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:var(--paper);border:2px solid var(--acc);color:var(--acc-ink);font-style:normal;font-size:11.5px;font-weight:600;display:grid;place-items:center;z-index:1}
+.flow b{display:block;font-weight:500;font-size:14.5px;line-height:1.35;margin-bottom:3px}
+.flow span.d{display:block;font-size:13px;color:var(--ink-2);line-height:1.5}
+.flow.sm li{padding-top:30px}
+.flow.sm li i{width:20px;height:20px;font-size:10.5px;top:1px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line);margin-top:32px}
+.stats>div{padding:20px 16px 22px 0;border-bottom:1px solid var(--line);min-width:0}
+.stats>div:not(:nth-child(4n+1)){padding-left:20px;border-left:1px solid var(--line)}
+.stats b,.bnum b{display:block;font-size:clamp(34px,3.6vw,48px);font-weight:300;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stats p,.bnum p{margin-top:10px;font-size:13.5px;color:var(--ink-2);max-width:26ch}
+.bnum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:900px}
+.bnum b small{font-size:.38em;color:var(--acc);margin-left:3px;letter-spacing:0}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:540px}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line)}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);font-weight:500;white-space:nowrap}
+html:not(.en) th{letter-spacing:.05em}
+tr:last-child td{border-bottom:0}
+td.hl{background:var(--acc-soft)}
+td b{font-weight:500}
+.res{font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap;display:inline-block}
+.res.pass{color:var(--leaf)}.res.gap{color:var(--amber)}.res.part{color:var(--acc-ink)}
+.sev{display:inline-block;min-width:26px;text-align:center;font-size:12px;font-weight:600;padding:2px 6px;border-radius:6px;color:#fff}
+.sev.s1{background:#2B2D36}.sev.s2{background:#6A5CD8}
+.flt{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.flt button{border:1px solid var(--line-2);border-radius:99px;padding:6px 12px;font-size:13px}
+.flt button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tag{font-size:11px;font-weight:600;letter-spacing:.04em;padding:2px 7px;border-radius:6px;border:1px solid var(--line-2);white-space:nowrap;margin-right:6px}
+.tag.c{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tag.p{background:var(--acc-soft);color:var(--acc-ink);border-color:transparent}
+
+/* cards */
+.ncard{border:1px solid var(--line);border-radius:var(--r);padding:20px;background:var(--paper);display:flex;flex-direction:column;gap:8px;min-width:0;transition:transform .4s var(--ease),border-color .3s}
+.ncard:hover{transform:translateY(-3px);border-color:var(--acc-2)}
+.ncard .n{font-size:30px;font-weight:300;line-height:.95;letter-spacing:-.05em;color:var(--acc)}
+.ncard h3{font-size:16.5px;font-weight:500;letter-spacing:0}
+.ncard p{font-size:14px;color:var(--ink-2)}
+.cuts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.cut{border:1px solid var(--line);border-radius:var(--r);padding:18px;background:var(--paper);min-width:0}
+.cut h4{font-size:15.5px;font-weight:500;margin-bottom:8px;line-height:1.35}
+.cut p{font-size:13.5px;color:var(--ink-2)}
+.cut small{display:block;margin-top:10px;font-size:11.5px;color:var(--acc-ink);letter-spacing:.04em}
+
+/* figures */
+.fig{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#111;position:relative;cursor:zoom-in}
+.fig img,.fig video{width:100%;height:auto}
+.fig .z{position:absolute;right:10px;bottom:10px;font-size:11px;background:rgba(17,17,20,.72);color:#fff;border-radius:99px;padding:3px 9px;opacity:0;transition:opacity .25s}
+.fig:hover .z{opacity:1}
+.fig.vid{cursor:default}
+figcaption{font-size:12.5px;color:var(--ink-2);margin-top:8px;max-width:70ch;line-height:1.5}
+figcaption b{color:var(--ink);font-weight:500}
+.exh{border-radius:22px;overflow:hidden;position:relative;background:#111}
+.exh img{width:100%;height:auto}
+.exh .badge{position:absolute;left:14px;top:14px;font-size:11.5px;background:rgba(12,18,16,.72);color:#fff;border-radius:99px;padding:5px 11px;backdrop-filter:blur(6px)}
+.tilt{transition:transform .35s var(--ease);will-change:transform}
+
+/* version rows */
+.vrow{display:grid;grid-template-columns:minmax(0,.78fr) minmax(0,1.5fr);gap:clamp(20px,3.4vw,48px);padding-block:clamp(26px,3.4vw,44px);border-top:1px solid var(--line-2);align-items:start}
+.vrow.first{border-top:0;padding-top:0}
+.vinfo{position:sticky;top:84px}
+.vnum{font-size:clamp(46px,5.6vw,78px);font-weight:300;letter-spacing:-.05em;line-height:.95;background:linear-gradient(120deg,var(--ink) 20%,var(--acc) 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.vinfo h3{font-size:19px;font-weight:500;margin:10px 0 14px;letter-spacing:0}
+.vinfo dl{display:grid;gap:12px}
+.vinfo dt{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:2px}
+html:not(.en) .vinfo dt{letter-spacing:.05em}
+.vinfo dd{margin:0;font-size:14px;color:var(--ink-2);line-height:1.6}
+.vinfo dd.finding{color:var(--ink)}
+.vgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.vgrid.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.vgrid .span2{grid-column:1/-1}
+.vgrid>*{min-width:0}
+.vsub{margin:22px 0 10px}
+.pair{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.pair>*{min-width:0}
+
+/* hotspot */
+.hs{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:clamp(16px,2.6vw,36px);align-items:start}
+.hs-img{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#111}
+.hs-img img{width:100%;height:auto}
+.hot{position:absolute;border:1.5px solid rgba(255,255,255,.5);border-radius:10px;transition:background .25s,border-color .25s,box-shadow .25s}
+.hot b{position:absolute;left:-1px;top:-1px;transform:translate(-35%,-35%);width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:600;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.hot:hover,.hot.on{background:rgba(157,144,255,.2);border-color:var(--acc-2);box-shadow:0 0 0 3px rgba(157,144,255,.3)}
+.hs-list{display:grid;border-top:1px solid var(--line)}
+.hs-list button{display:grid;grid-template-columns:28px minmax(0,1fr);gap:0 8px;text-align:left;padding:12px 0;border-bottom:1px solid var(--line);width:100%}
+.hs-list .i{font-size:12px;color:var(--ink-3);font-weight:600;padding-top:2px}
+.hs-list .t{font-size:15px;color:var(--ink-3);transition:color .2s}
+.hs-list .d{grid-column:2;font-size:13.5px;color:var(--ink-2);max-height:0;overflow:hidden;opacity:0;transition:max-height .5s var(--ease),opacity .4s,margin .4s}
+.hs-list button.on .t{color:var(--ink);font-weight:500}
+.hs-list button.on .i{color:var(--acc)}
+.hs-list button.on .d{max-height:240px;opacity:1;margin-top:6px}
+
+/* carousel */
+.car-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-x:contain}
+.car-track::-webkit-scrollbar{display:none}
+.slide{flex:0 0 100%;scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(18px,3vw,40px);align-items:center;background:var(--paper-2);border:1px solid var(--line);border-radius:22px;padding:clamp(18px,2.6vw,32px);min-width:0}
+.slide .sn{font-size:12px;color:var(--acc);font-weight:600;margin-bottom:8px;display:block}
+.slide h3{font-size:clamp(18px,1.7vw,22px);font-weight:500;line-height:1.3;margin-bottom:10px;letter-spacing:0}
+.slide p{font-size:14px;color:var(--ink-2)}
+.slide .why{margin-top:14px;padding-top:12px;border-top:1px solid var(--line-2)}
+.slide .why .lbl{margin-bottom:4px}
+.car-ctl{display:flex;align-items:center;gap:12px;margin-top:14px}
+.car-ctl button.nav{width:38px;height:38px;border:1px solid var(--line-2);border-radius:50%;display:grid;place-items:center;font-size:16px}
+.car-ctl button.nav:hover{background:var(--ink);color:var(--paper)}
+.dots{display:flex;gap:7px}
+.dots button{width:8px;height:8px;border-radius:50%;background:var(--line-2);transition:width .3s var(--ease),background .3s}
+.dots button.on{width:24px;border-radius:9px;background:var(--acc)}
+
+/* before/after */
+.ba{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#111;user-select:none;touch-action:pan-y}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:left top}
+.ba .af{clip-path:inset(0 0 0 var(--x,50%))}
+.ba .hd{position:absolute;top:0;bottom:0;left:var(--x,50%);width:2px;background:#fff;pointer-events:none}
+.ba .hd::after{content:"⟷";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;color:#111;border-radius:99px;width:34px;height:34px;display:grid;place-items:center;font-size:15px}
+.ba .t{position:absolute;top:12px;font-size:11px;letter-spacing:.08em;padding:4px 10px;border-radius:99px;background:rgba(0,0,0,.65);color:#fff}
+.ba .t.l{left:12px}.ba .t.r{right:12px}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+
+.exp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.exp>div{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--paper);min-width:0}
+.exp h4{font-size:15px;font-weight:500;margin-bottom:6px}
+.exp p{font-size:13.5px;color:var(--ink-2)}
+.exp .out{margin-top:10px;font-size:12.5px;color:var(--rose);font-weight:500}
+
+/* AI chapter (light) */
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.three>div{border:1px solid var(--line);border-radius:16px;padding:20px;background:var(--paper);min-width:0;position:relative;overflow:hidden}
+.three>div::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:var(--c,var(--acc))}
+.three>div:nth-child(1){--c:#4A8FC9}.three>div:nth-child(2){--c:#D9A93B}.three>div:nth-child(3){--c:var(--acc)}
+.three .lv{font-size:12px;font-weight:600;letter-spacing:.06em;color:var(--ink-3)}
+.three h4{font-size:16px;font-weight:500;margin:8px 0 6px}
+.three p{font-size:13.5px;color:var(--ink-2)}
+.three .cd{margin-top:12px;display:inline-block;font-size:11px;letter-spacing:.04em;border:1px solid var(--line-2);border-radius:99px;padding:3px 10px;color:var(--ink-2);font-family:ui-monospace,Menlo,monospace}
+.three .st{margin-top:12px;font-size:12.5px;color:var(--leaf);font-weight:500}
+.lab{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(18px,3vw,40px);align-items:start}
+.opts{display:grid;gap:8px}
+.opts button{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;font-size:14.5px;text-align:left;background:var(--paper);transition:background .2s,border-color .2s}
+.opts button:hover{border-color:var(--acc)}
+.opts button[aria-pressed="true"]{background:var(--acc-soft);border-color:var(--acc);color:var(--acc-ink);font-weight:500}
+.out-pane{border:1px solid var(--line);border-radius:18px;padding:clamp(16px,2vw,24px);background:var(--paper);min-height:320px}
+.out-pane .sc{display:none}
+.out-pane .sc.on{display:block;animation:pp .45s var(--ease)}
+@keyframes pp{from{opacity:0;transform:translateY(8px)}}
+.out-pane .layer{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.lchip{font-size:12px;font-weight:600;padding:4px 11px;border-radius:99px;letter-spacing:.03em}
+.lchip.l1{background:#DCEBF8;color:#1F5A8C}
+.lchip.l2{background:#FBEFCB;color:#7A5A0F}
+.lchip.l3{background:var(--acc-soft);color:var(--acc-ink)}
+.out-pane .rc{font-size:12px;color:var(--ink-2)}
+.out-pane dl{display:grid;gap:14px}
+.out-pane dt{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+html:not(.en) .out-pane dt{letter-spacing:.06em}
+.out-pane dd{margin:0;font-size:14.5px}
+.out-pane dd.no{color:var(--leaf);font-weight:500}
+.chain{display:grid;gap:8px}
+.layerx{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:13px 16px;background:var(--paper);transition:border-color .35s,background .35s,transform .45s var(--ease)}
+.layerx .lv{font-size:24px;font-weight:300;color:var(--ink-3)}
+.layerx h4{font-size:15px;font-weight:500}
+.layerx p{font-size:13px;color:var(--ink-2)}
+.layerx .s{font-size:11px;letter-spacing:.06em;color:var(--ink-2);text-align:right;max-width:150px;border:1px solid var(--line-2);border-radius:99px;padding:3px 10px;white-space:nowrap}
+.layerx.on{border-color:var(--acc);background:var(--acc-soft);transform:translateX(6px)}
+.layerx.on .lv{color:var(--acc)}
+pre.code{margin:0;background:var(--acc-soft);border:1px solid var(--line);border-radius:14px;padding:18px 20px;overflow-x:auto;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;line-height:1.8;color:var(--ink)}
+pre.code .c{color:var(--ink-3)}pre.code .k2{color:var(--acc-ink);font-weight:600}
+.ethic{list-style:none;margin:0;padding:0;display:grid}
+.ethic li{padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;font-size:14.5px}
+.ethic li:last-child{border-bottom:0}
+.ethic li::before{content:"✗";color:var(--rose);flex:none}
+.ethic.ok li::before{content:"✓";color:var(--leaf)}
+
+/* design system */
+.sw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sw div{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
+.sw i{display:block;height:60px}
+.sw p{padding:9px 12px;font-size:12.5px;line-height:1.35}.sw b{display:block;font-weight:500;font-size:13.5px}
+.sw p span{color:var(--ink-3);font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+.ico-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.ico{border:1px solid var(--line);border-radius:14px;padding:14px 6px 10px;text-align:center;background:var(--paper);transition:border-color .2s,transform .3s var(--ease)}
+.ico:hover{border-color:var(--acc-2);transform:translateY(-3px)}
+.ico svg{width:30px;height:30px;color:var(--ink);margin:0 auto 8px;display:block}
+.ico span{font-size:11.5px;color:var(--ink-2);display:block;line-height:1.3}
+.ico-group{margin-bottom:22px}
+.ico-group .lbl{margin-bottom:10px}
+.spec{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--line)}
+.spec>div{padding:16px 14px 18px 0;border-bottom:1px solid var(--line)}
+.spec>div:not(:nth-child(4n+1)){padding-left:16px;border-left:1px solid var(--line)}
+.spec b{display:block;font-size:26px;font-weight:300;letter-spacing:-.03em;line-height:1.1}
+.spec p{font-size:12.5px;color:var(--ink-2);margin-top:6px}
+
+/* end */
+.big{font-size:clamp(52px,12vw,170px);font-weight:300;letter-spacing:-.05em;line-height:1.12;padding-bottom:.08em;text-align:center;background:linear-gradient(90deg,var(--ink) 0%,var(--ink) 30%,var(--acc) 55%,var(--acc-3) 75%,var(--ink-3) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 9s ease-in-out infinite alternate;padding-top:clamp(26px,4vw,52px)}
+@keyframes sh{to{background-position:100% 0}}
+.tagline{text-align:center;color:var(--ink-2);font-size:15px;margin-bottom:28px;font-style:italic}
+footer{padding-block:26px 38px;border-top:1px solid var(--line)}
+footer .in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;font-size:13px;color:var(--ink-2)}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:99;background:rgba(14,10,30,.88);display:grid;place-items:center;padding:max(24px,env(safe-area-inset-top,0px)) 16px 24px;animation:pp .3s var(--ease)}
+.lb img{max-height:88vh;width:auto;max-width:100%;border-radius:12px}
+.lb button{position:absolute;top:max(18px,env(safe-area-inset-top,0px));right:max(18px,env(safe-area-inset-right,0px));background:#fff;color:#111;border-radius:99px;padding:8px 16px;font-size:13px}
+
+@media (max-width:1100px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats>div:not(:nth-child(4n+1)){padding-left:0;border-left:0}
+  .stats>div:nth-child(2n){padding-left:20px;border-left:1px solid var(--line)}
+  .cuts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hs,.lab,.slide,.vrow{grid-template-columns:1fr}
+  .vinfo{position:static}
+  .spec{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .spec>div:not(:nth-child(4n+1)){padding-left:0;border-left:0}
+  .spec>div:nth-child(2n){padding-left:16px;border-left:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .meta2,.g2{grid-template-columns:1fr}
+  .g3,.three,.exp,.pair{grid-template-columns:1fr}
+  .vgrid.c3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bnum{grid-template-columns:1fr;gap:18px}
+  .stats b{font-size:30px}
+  .cuts{grid-template-columns:1fr}
+  .menu-btn span{display:none}
+  .layerx{grid-template-columns:34px minmax(0,1fr)}
+  .layerx .s{grid-column:2;text-align:left;max-width:none;justify-self:start}
+  .sw{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hot b{width:18px;height:18px;font-size:10px}
+  .flow{grid-template-columns:1fr}
+  .flow li{padding:0 0 18px 38px}
+  .flow li::before{left:11px;right:auto;top:0;bottom:0;width:2px;height:auto}
+  .flow li:last-child::before{background:none}
+  .flow.sm li{padding:0 0 14px 32px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+  #fx,#ring,.banner .glow,.banner canvas{display:none}
+}
+.fig.contain{aspect-ratio:1440/900;display:grid;place-items:center;background:#0f1612}.fig.contain img{height:100%;width:auto;max-width:100%}
+
+/* chapter rail: fisheye on hover */
+.rail ol{perspective:520px;padding:14px 46px 14px 16px}
+.rail li{transform-origin:0 50%;transition:transform .28s var(--ease),opacity .28s;will-change:transform}
+.rail.hot li button{color:var(--ink-2)}
+.rail.hot li.near button{color:var(--ink)}
+@media (prefers-reduced-motion:reduce){}
+
+/* ===== Transfer Coach: tighter rhythm, poster-weight type, larger screens ===== */
+section.ch{padding-block:clamp(26px,3.2vw,46px)}
+.intro{padding-top:clamp(24px,3vw,40px)}
+.head{gap:6px;margin-bottom:clamp(14px,1.8vw,22px)}
+.head h2{padding-bottom:10px}
+.blk{margin-top:clamp(22px,2.8vw,38px)}
+.g2{gap:clamp(14px,2.4vw,32px)}
+.g3{gap:clamp(10px,1.4vw,16px)}
+.card{padding:clamp(14px,1.6vw,20px);border-radius:16px}
+.ncard{padding:16px;gap:6px;border-radius:16px}
+.ncard .n{font-size:26px}
+.ncard h3{font-size:15.5px}
+.ncard p{font-size:13.5px}
+th,td{padding:9px 12px}
+.meta2>div{padding:10px 0 14px}
+.intro h1{margin:8px 0 clamp(16px,2.2vw,26px);font-weight:600;letter-spacing:-.03em}
+html:not(.en) .intro h1{font-weight:500}
+.head h2{font-weight:600;letter-spacing:-.03em}
+html:not(.en) .head h2{font-weight:500}
+.head .lede{font-size:15px}
+.stats{margin-top:20px}
+.stats>div{padding:14px 14px 16px 0}
+.stats>div:not(:nth-child(4n+1)){padding-left:18px}
+.ctas{margin-top:18px}
+.head .row .lbl{color:var(--acc-ink);font-weight:600}
+.flow li{padding-top:30px}
+.flow b{font-size:14px}
+
+/* poster banner */
+.banner{background:#1B1410}
+.banner img{aspect-ratio:2000/800}
+.banner .glow{background:radial-gradient(280px circle at var(--mx,70%) var(--my,40%),rgba(255,150,60,.34),transparent 70%)}
+
+/* dark brown band echoing the poster */
+.qband{background:linear-gradient(120deg,#1B1410 0%,#3A2214 55%,#C8601A 100%);padding-block:clamp(28px,3.6vw,48px)}
+.qband h2{font-weight:600;font-size:clamp(20px,2.3vw,30px);margin:8px 0 10px}
+html:not(.en) .qband h2{font-weight:500}
+.qband::after{background:radial-gradient(circle,rgba(255,150,60,.45),transparent 68%)}
+
+/* screens: bigger */
+.phone{position:relative;width:100%;aspect-ratio:780/1688;border-radius:24px;border:4px solid #2B211C;overflow:hidden;background:#2B211C;box-shadow:0 16px 28px -16px rgba(43,33,28,.5)}
+.phone img{width:100%;height:100%;object-fit:cover}
+.phone .no{position:absolute;left:8px;bottom:8px;font:600 10.5px/1 ui-monospace,Menlo,monospace;background:rgba(43,33,28,.85);color:#FFB877;border-radius:6px;padding:4px 6px}
+.fig.light{background:#fff}
+.fig.tall{max-height:640px;overflow:auto;cursor:default}
+.fig.tall img{cursor:zoom-in}
+.imgrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.imgrow>*{min-width:0}
+.gtabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.gtabs button{border:1px solid var(--line-2);border-radius:99px;padding:6px 12px;font-size:13px;background:var(--paper)}
+.gtabs button small{color:var(--ink-3);margin-left:6px;font-family:ui-monospace,Menlo,monospace;font-size:11px}
+.gtabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.gtabs button[aria-pressed="true"] small{color:var(--acc-2)}
+.prail{display:flex;gap:14px;overflow-x:auto;padding:4px 4px 12px;scroll-snap-type:x proximity;scrollbar-width:thin}
+.prail figure{flex:0 0 min(250px,64vw);scroll-snap-align:start;animation:pp .45s var(--ease) both}
+.prail figure .phone{cursor:zoom-in}
+.prail figcaption{margin-top:6px;font-size:12.5px}
+.gdesc{font-size:14px;color:var(--ink-2);max-width:70ch;margin-bottom:8px}
+
+/* finding thumbnails */
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumbs button{width:62px;aspect-ratio:780/1688;border-radius:9px;overflow:hidden;border:2px solid #2B211C;flex:none;background:#2B211C;transition:transform .25s var(--ease)}
+.thumbs button img{width:100%;height:100%;object-fit:cover}
+.thumbs button:hover{transform:translateY(-4px) scale(1.04)}
+#fnd td:last-child{min-width:150px}
+.sev{white-space:nowrap;padding:2px 9px}
+.sev.s1{background:#B3261E}.sev.s2{background:#E8701A}.sev.s3{background:#C98A1B}.sev.s4{background:#8C8478}
+
+/* pointer */
+#tcv{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:96}
+#tdot{position:fixed;left:0;top:0;z-index:97;pointer-events:none;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--acc);border:2px solid #fff;box-shadow:0 0 0 1px var(--acc),0 2px 8px rgba(180,80,10,.35);opacity:0;transition:opacity .25s,width .2s var(--ease),height .2s var(--ease),margin .2s var(--ease),background .2s}
+#tdot.on{opacity:1}
+#tdot.hot{width:18px;height:18px;margin:-9px 0 0 -9px;background:#fff;border-color:var(--acc)}
+#tchip{position:fixed;left:0;top:0;z-index:97;pointer-events:none;opacity:0;font:600 10.5px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;background:#2B211C;color:#FFB877;padding:6px 10px;border-radius:8px;transition:opacity .2s;white-space:nowrap}
+#tchip.on{opacity:1}
+@media (prefers-reduced-motion:reduce){#tcv,#tdot,#tchip,.banner .glow{display:none}}
+@media (max-width:760px){.imgrow{grid-template-columns:1fr}.thumbs button{width:52px}}
+
+/* ===== diagrams, charts, before/after ===== */
+.badge-f{display:inline-flex;align-items:center;gap:8px;font:600 11px/1 ui-monospace,Menlo,monospace;letter-spacing:.1em;text-transform:uppercase;background:var(--acc-soft);color:var(--acc-ink);border:1px solid color-mix(in srgb,var(--acc) 40%,transparent);border-radius:99px;padding:6px 12px;margin-bottom:10px}
+.badge-f::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.dsc{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--paper)}
+.dsc svg{display:block;width:100%;height:auto;min-width:760px}
+svg text{font-family:var(--f);fill:var(--ink)}
+svg text.s{font-size:11.5px;fill:var(--ink-2)}
+svg text.h{font-size:12px;font-weight:600;letter-spacing:.08em;fill:var(--ink-3)}
+svg text.w{fill:#FFF6EC}
+svg text.b{font-weight:600}
+html:not(.en) svg text.en,html.en svg text.zh{display:none}
+svg .nd{fill:var(--paper);stroke:var(--line-2);stroke-width:1.5}
+svg .nd.dk{fill:#2B211C;stroke:#2B211C}
+svg .nd.or{fill:var(--acc-soft);stroke:var(--acc)}
+svg .nd.am{fill:#FFF6DC;stroke:#C98A1B}
+svg .nd.bl{fill:#E7EEFB;stroke:#4A6FB5}
+svg .ln{fill:none;stroke:var(--line-2);stroke-width:1.6}
+svg .ln.or{stroke:var(--acc)}
+svg .ln.am{stroke:#C98A1B;stroke-dasharray:5 4}
+svg .ln.bl{stroke:#4A6FB5;stroke-dasharray:5 4}
+svg .ar{fill:var(--ink-3)}svg .ar.am{fill:#C98A1B}svg .ar.bl{fill:#4A6FB5}
+:root[data-theme="dark"] svg .nd.am,:root[data-theme="dark"] svg .nd.bl{fill:#241b12}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) svg .nd.am{fill:#2A2012}:root:not([data-theme="light"]) svg .nd.bl{fill:#16203A}}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin-top:8px}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px}
+
+/* feature tree */
+.tree{margin:0;padding:0;list-style:none;font-size:14px}
+.tree ul{list-style:none;margin:0;padding:0 0 0 26px;position:relative}
+.tree li{position:relative;padding:5px 0 5px 22px}
+.tree li::before{content:"";position:absolute;left:0;top:0;bottom:0;border-left:1.5px solid var(--line-2)}
+.tree li::after{content:"";position:absolute;left:0;top:19px;width:16px;border-top:1.5px solid var(--line-2)}
+.tree li:last-child::before{bottom:auto;height:19px}
+.tree>li{padding-left:0}.tree>li::before,.tree>li::after{display:none}
+.tree .n{display:inline-block;border:1px solid var(--line-2);background:var(--paper);border-radius:10px;padding:5px 11px;font-weight:500}
+.tree .root{background:#2B211C;color:#FFB877;border-color:#2B211C}
+.tree .tab{background:var(--acc-soft);border-color:color-mix(in srgb,var(--acc) 50%,transparent);color:var(--acc-ink)}
+.tree .chips{display:inline-flex;gap:5px;flex-wrap:wrap;vertical-align:middle;margin-left:8px}
+.tree .chips button{font:600 11px/1 ui-monospace,Menlo,monospace;border:1px solid var(--line-2);border-radius:6px;padding:4px 6px;background:var(--paper);transition:background .2s,color .2s}
+.tree .chips button:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tree small{color:var(--ink-3);margin-left:6px;font-size:12px}
+
+/* before / after pairs */
+.bap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.bap>div{border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:14px;min-width:0}
+.bap .pp{display:grid;grid-template-columns:1fr 22px 1fr;gap:6px;align-items:center}
+.bap .pp .arw{color:var(--acc);font-size:18px;text-align:center}
+.bap .pp figure{margin:0;min-width:0}
+.bap .tg2{font:600 10.5px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;margin-bottom:5px;display:block;color:var(--ink-3)}
+.bap .tg2.new{color:var(--acc-ink)}
+.bap .im{border-radius:10px;overflow:hidden;border:1px solid var(--line-2);cursor:zoom-in;background:#fff}
+.bap .im img{width:100%;height:auto}
+.bap h4{font-size:14.5px;font-weight:600;margin:12px 0 4px;letter-spacing:0}
+.bap p{font-size:13px;color:var(--ink-2);line-height:1.5}
+
+/* charts */
+.chart{display:grid;gap:8px}
+.bar2{display:grid;grid-template-columns:64px 1fr 28px;gap:10px;align-items:center;font-size:13px}
+.bar2 .tk{height:12px;border-radius:7px;background:var(--line);overflow:hidden}
+.bar2 .tk i{display:block;height:100%;border-radius:7px;width:calc(var(--v)*100%);transform-origin:0 50%}
+.stack{display:flex;height:34px;border-radius:10px;overflow:hidden;margin:6px 0 8px}
+.stack span{display:grid;place-items:center;font:600 12px/1 var(--f);color:#fff;min-width:0}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2)}
+.legend2 i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.ppl{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.ppl b{width:22px;height:22px;border-radius:50%;background:var(--acc);display:block}
+.ppl b.j{border-radius:6px;background:#C98A1B;transform:rotate(45deg) scale(.8)}
+.mx td.dotc,.mx th.dotc{text-align:center}
+.dt{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid var(--acc);vertical-align:middle}
+.dt.f{background:var(--acc)}
+.dt.h{background:linear-gradient(90deg,var(--acc) 50%,transparent 50%)}
+.dt.e{border-color:var(--line-2)}
+.flow li.low i{background:var(--acc);color:#fff}
+.flow li.low b{color:var(--acc-ink)}
+.caps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.caps>div{border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:var(--paper);display:grid;gap:3px;min-width:0}
+.caps b{font-size:14px;font-weight:600}
+.caps span{font-size:13px;color:var(--ink-2);line-height:1.5}
+.caps i{font-style:normal;font:600 10.5px/1 ui-monospace,Menlo,monospace;color:var(--acc-ink);letter-spacing:.08em}
+@media (max-width:1100px){.bap{grid-template-columns:repeat(2,minmax(0,1fr))}.caps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.bap,.caps{grid-template-columns:1fr}}
+
+.thumbs{flex-wrap:nowrap}
+.thumbs button{width:50px}
+#fnd td:last-child{min-width:230px}
+.bar2 .tk i{transform-origin:0 50%}
+
+svg text{dominant-baseline:central}
+.dsc.mm{max-width:820px}
+.dsc.mm svg text{font-size:17px}
+.dsc.mm svg text.h{font-size:14px}
+
+html.en .intro h1{max-width:none}
+
+</style>
+<header class="top" id="top"><div class="in">
+<a class="word" href="#hero">TRANSFER COACH</a>
+<button class="menu-btn" id="menu-open" type="button" aria-haspopup="dialog"><i><b></b><b></b></i><span>Menu</span></button>
+<span class="sp"></span>
+<div class="seg" role="group" aria-label="Language"><button type="button" id="l-zh" aria-pressed="true">中</button><button type="button" id="l-en" aria-pressed="false">EN</button></div>
+</div><span class="prog" id="prog"></span></header>
+<nav class="rail" id="railnav" aria-label="Chapters"><ol id="rail"><span class="dot" id="rail-dot"></span></ol></nav>
+<div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Chapters"><div class="mh"><span class="word">TRANSFER COACH</span><button type="button" id="menu-close">✕</button></div><ol id="menu-list"></ol></div>
+<canvas id="tcv" aria-hidden="true"></canvas><div id="tdot" aria-hidden="true"></div><div id="tchip" aria-hidden="true"></div>
+<div class="sheet">
+<section class="banner" id="hero" aria-label="Transfer Coach"><img id="bn-img" src="media/poster.webp" alt="Transfer Coach poster: Make the transfer. Three phone screens above an orange ribbon road with a bus" fetchpriority="high"><div class="glow"></div></section>
+<section class="ch intro" id="c-overview" data-nav="概览|Overview"><div class="wrap"><div>
+<h1><span class="zh">Transfer Coach：换乘场景的决策支持体验设计</span><span class="en">Transfer Coach: decision support for transfers</span></h1>
+<div class="meta2"><div><span class="lbl"><span class="zh">项目性质</span><span class="en">Engagement</span></span><p><span class="zh">委托项目。受 TripView（悉尼公共交通行程规划应用）委托，2026 年。</span><span class="en">Commissioned by TripView, a Sydney public transport journey planner, 2026.</span></p></div><div><span class="lbl"><span class="zh">我的角色</span><span class="en">My role</span></span><p><span class="zh">UX 研究员与交互设计师，独立完成研究、概念、原型与评估。</span><span class="en">UX researcher and interaction designer, solo, from research to evaluation.</span></p></div><div><span class="lbl"><span class="zh">交付范围（Brief 约定）</span><span class="en">Scope of delivery (per brief)</span></span><p><span class="zh">研究与设计依据 · 原型与演示 · 评估与迭代记录</span><span class="en">Research and rationale · prototypes and demo · evaluation and iteration record</span></p></div><div><span class="lbl"><span class="zh">关注点</span><span class="en">Focus</span></span><p><span class="zh">时间压力下的决策 · 实时信息的信任 · 异常恢复 · 可解释的状态</span><span class="en">Decisions under time pressure · trust in real-time data · error recovery · explainable status</span></p></div></div>
+</div>
+<div class="blk"><span class="lbl k"><span class="zh">项目流程与对应交付文档</span><span class="en">Project flow and delivery documents</span></span><ol class="flow sm" style="--n:7"><li><i>1</i><b><span class="zh">Brief</span><span class="en">Brief</span></b><span class="d"><span class="zh">01 范围与验收</span><span class="en">01 scope and acceptance</span></span></li><li><i>2</i><b><span class="zh">研究</span><span class="en">Research</span></b><span class="d"><span class="zh">02 访谈与亲和图</span><span class="en">02 interviews, affinity map</span></span></li><li><i>3</i><b><span class="zh">画像与旅程</span><span class="en">Persona</span></b><span class="d"><span class="zh">03 低谷在换乘</span><span class="en">03 low point: transfer</span></span></li><li><i>4</i><b><span class="zh">概念</span><span class="en">Concepts</span></b><span class="d"><span class="zh">04 两个概念取舍</span><span class="en">04 two concepts compared</span></span></li><li><i>5</i><b><span class="zh">原型</span><span class="en">Prototypes</span></b><span class="d"><span class="zh">05 v1 → v4</span><span class="en">05 v1 → v4</span></span></li><li><i>6</i><b><span class="zh">评估</span><span class="en">Evaluation</span></b><span class="d"><span class="zh">06 三种方法</span><span class="en">06 three methods</span></span></li><li><i>7</i><b><span class="zh">成果</span><span class="en">Outcomes</span></b><span class="d"><span class="zh">07 局限与下一步</span><span class="en">07 limits and next steps</span></span></li></ol></div>
+<div class="stats"><div><b class="num" data-c="7">7</b><p><span class="zh">位参与者完成场景式可用性测试</span><span class="en">participants in scenario-based usability tests</span></p></div><div><b class="num" data-c="3">3</b><p><span class="zh">种互补的评估方法</span><span class="en">complementary evaluation methods</span></p></div><div><b class="num" data-c="38">38</b><p><span class="zh">屏高保真，覆盖正常流程与 5 类异常</span><span class="en">high-fidelity screens, normal flow plus 5 disruptions</span></p></div><div><b class="num" data-c="13">13</b><p><span class="zh">条改进建议，8 条已完整落实</span><span class="en">recommendations, 8 fully built in</span></p></div></div>
+</div></section>
+<section class="ch alt" id="c-brief" data-nav="背景与目标|Brief"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">01 · <span class="zh">背景与目标</span><span class="en">Brief and goals</span></span></div><h2><span class="zh">换乘中的三个问题，行程规划应用很少一起回答</span><span class="en">Three questions in a transfer that planners rarely answer together</span></h2><p class="lede"><span class="zh">TripView 希望探索换乘辅助功能。出发前能看路线和时刻表；换乘的几分钟里，用户问的是另一组问题。</span><span class="en">TripView wanted to explore a transfer assistance feature. Before departure riders see routes and timetables; during a transfer they ask different questions.</span></p></div>
+<ol class="flow" style="--n:3"><li><i>1</i><b><span class="zh">我还赶得上下一班吗？</span><span class="en">Can I make the next service?</span></b><span class="d"><span class="zh">出发倒计时 · 步行时间 · 剩余时间</span><span class="en">Countdown · walk time · spare time</span></span></li><li><i>2</i><b><span class="zh">我还能准时到达吗？</span><span class="en">Will I still arrive on time?</span></b><span class="d"><span class="zh">以活动开始时间为基准，而非车辆</span><span class="en">Measured against the event, not the vehicle</span></span></li><li><i>3</i><b><span class="zh">不行的话现在做什么？</span><span class="en">If not, what now?</span></b><span class="d"><span class="zh">排好序、可立即开始的替代方案</span><span class="en">A ranked alternative that can start at once</span></span></li></ol>
+<div class="blk"><span class="lbl k"><span class="zh">验收要求（Brief）</span><span class="en">Acceptance requirements (brief)</span></span><div class="caps"><div><i>01</i><b><span class="zh">规划与选路</span><span class="en">Planning and route choice</span></b><span><span class="zh">按预计到达时间比较路线，确认后开始</span><span class="en">Compare routes by arrival time, confirm, start</span></span></div><div><i>02</i><b><span class="zh">换乘判断</span><span class="en">Transfer judgement</span></b><span><span class="zh">倒计时、步行、剩余时间同屏；到达时间另列</span><span class="en">Countdown, walk and spare time together; arrival shown separately</span></span></div><div><i>03</i><b><span class="zh">站内引导</span><span class="en">Station guidance</span></b><span><span class="zh">地标、方向图示、短句；可重新确认位置</span><span class="en">Landmarks, direction graphics, short copy; re-confirm position</span></span></div><div><i>04</i><b><span class="zh">延误与改道</span><span class="en">Delays and rerouting</span></b><span><span class="zh">显示延误幅度与对到达的影响，可等可换</span><span class="en">Show delay and effect on arrival; wait or switch</span></span></div><div><i>05</i><b><span class="zh">错过与坐过站</span><span class="en">Missed service and wrong stop</span></b><span><span class="zh">错过列车、错过公交、坐过站各有恢复流程</span><span class="en">A recovery flow for each</span></span></div><div><i>06</i><b><span class="zh">进度与到达</span><span class="en">Progress and arrival</span></b><span><span class="zh">区分步行、等待、乘车、换乘与到达</span><span class="en">Distinguish walking, waiting, riding, transferring, arriving</span></span></div></div><p class="para" style="margin-top:12px;font-size:14px"><span class="zh">示例行程（演示数据）：Green Square → T2 → Central → Stand C 乘 343 路 → Lakeside Hall，赶 <b>10:30</b> 的活动。</span><span class="en">Sample trip (demo data): Green Square → T2 → Central → Stand C for Bus 343 → Lakeside Hall, for a <b>10:30</b> event.</span></p></div>
+</div></section>
+<section class="ch" id="c-research" data-nav="研究|Research"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">02 · <span class="zh">用户研究</span><span class="en">Research</span></span></div><h2><span class="zh">不确定感比错过班次本身更让人焦虑</span><span class="en">Uncertainty hurts more than the missed service</span></h2></div>
+<ol class="flow" style="--n:3"><li><i>1</i><b><span class="zh">桌面研究</span><span class="en">Desk research</span></b><span class="d"><span class="zh">2002–2020 年通勤研究，两组主题</span><span class="en">Commuting studies 2002–2020, two groups</span></span></li><li><i>2</i><b><span class="zh">半结构化访谈</span><span class="en">Interviews</span></b><span class="d"><span class="zh">最近一次通勤 → 糟糕的换乘 → 工具与技巧</span><span class="en">Recent commute → a bad transfer → tools and tricks</span></span></li><li><i>3</i><b><span class="zh">亲和图</span><span class="en">Affinity mapping</span></b><span class="d"><span class="zh">6 个主题 → 6 条洞察</span><span class="en">Six themes → six insights</span></span></li></ol>
+<div class="g2" style="margin-top:14px"><div><figure><div class="fig light" data-zoom="media/affinity.webp"><img src="media/affinity.webp" alt="Affinity map" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh"><b>亲和图</b>：6 个主题（情绪、关键事件、积极体验、工具痛点、期望功能、行为模式）</span><span class="en"><b>Affinity map:</b> six themes (emotion, critical incidents, positive moments, tool pain points, desired features, behaviours)</span></figcaption></figure></div><div><span class="lbl k"><span class="zh">访谈提纲（节选）</span><span class="en">Interview guide (excerpt)</span></span><div class="card"><ul class="ethic ok" style="font-size:14px"><li><span class="zh">带我走一遍你最近一次通勤，从出门开始。</span><span class="en">Walk me through your most recent commute, from leaving the house.</span></li><li><span class="zh">讲一次换乘出问题的经历：你做了什么，感受如何，之后有没有改变出行方式？</span><span class="en">Tell me about a time a transfer went badly. What did you do, and did it change how you travel?</span></li><li><span class="zh">你用什么规划或查看行程？哪些不信任？除了应用，你有什么小技巧？</span><span class="en">What do you use to check your journey, and what do you not trust? Any tricks beyond apps?</span></li></ul><p class="para" style="margin-top:10px;font-size:13.5px"><span class="zh">追问覆盖高峰、行李、天气与拥挤。<b>桌面研究结论：</b>多数通勤技术把通勤当作“要打发的时间”，没有一个覆盖换乘中的决策时刻。</span><span class="en">Probes cover peak hour, luggage, weather and crowding. <b>Desk research takeaway:</b> most commuting technology treats the commute as time to fill; none addresses the decision moment inside a transfer.</span></p></div></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">洞察 → 设计回应（图）</span><span class="en">Insight → design response (map)</span></span><div class="dsc mm"><svg viewBox="0 0 1070 532" role="img" aria-label="Insight to design response map"><text class="zh h" x="290" y="22" text-anchor="start"><tspan x="290" dy="0">洞察</tspan></text><text class="en h" x="290" y="22" text-anchor="start"><tspan x="290" dy="0">INSIGHT</tspan></text><text class="zh h" x="710" y="22" text-anchor="start"><tspan x="710" dy="0">设计回应</tspan></text><text class="en h" x="710" y="22" text-anchor="start"><tspan x="710" dy="0">DESIGN RESPONSE</tspan></text><rect class="nd dk" x="20" y="218" width="190" height="124" rx="16"/><text class="zh w b" x="115" y="269" text-anchor="middle"><tspan x="115" dy="0">换乘时刻</tspan><tspan x="115" dy="22">6 条洞察</tspan></text><text class="en w b" x="115" y="269" text-anchor="middle"><tspan x="115" dy="0">The transfer</tspan><tspan x="115" dy="22">6 insights</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 70, 290 70"/><rect class="nd or" x="290" y="40" width="320" height="60" rx="12"/><text class="zh b" x="306" y="59" text-anchor="start"><tspan x="306" dy="0">不确定比错过班次</tspan><tspan x="306" dy="22">更让人焦虑</tspan></text><text class="en b" x="306" y="59" text-anchor="start"><tspan x="306" dy="0">Uncertainty hurts more</tspan><tspan x="306" dy="22">than the missed service</tspan></text><path class="ln or" d="M610 70 H 700"/><path class="ar" d="M700 65 l9 5 l-9 5z"/><rect class="nd" x="710" y="40" width="340" height="60" rx="12"/><text class="zh " x="726" y="59" text-anchor="start"><tspan x="726" dy="0">永远给出下一步</tspan><tspan x="726" dy="22">而不只显示状态</tspan></text><text class="en " x="726" y="59" text-anchor="start"><tspan x="726" dy="0">Always show a next move,</tspan><tspan x="726" dy="22">not only a status</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 152, 290 152"/><rect class="nd or" x="290" y="122" width="320" height="60" rx="12"/><text class="zh b" x="306" y="141" text-anchor="start"><tspan x="306" dy="0">悄悄变化</tspan><tspan x="306" dy="22">摧毁对应用的信任</tspan></text><text class="en b" x="306" y="141" text-anchor="start"><tspan x="306" dy="0">Silent changes</tspan><tspan x="306" dy="22">break trust</tspan></text><path class="ln or" d="M610 152 H 700"/><path class="ar" d="M700 147 l9 5 l-9 5z"/><rect class="nd" x="710" y="122" width="340" height="60" rx="12"/><text class="zh " x="726" y="141" text-anchor="start"><tspan x="726" dy="0">写明依据、更新时间</tspan><tspan x="726" dy="22">和“延误已计入”</tspan></text><text class="en " x="726" y="141" text-anchor="start"><tspan x="726" dy="0">State the basis, update time</tspan><tspan x="726" dy="22">and “delay included”</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 234, 290 234"/><rect class="nd or" x="290" y="204" width="320" height="60" rx="12"/><text class="zh b" x="306" y="223" text-anchor="start"><tspan x="306" dy="0">站内步行与寻路</tspan><tspan x="306" dy="22">是薄弱环节</tspan></text><text class="en b" x="306" y="223" text-anchor="start"><tspan x="306" dy="0">Station walking and</tspan><tspan x="306" dy="22">wayfinding are weak</tspan></text><path class="ln or" d="M610 234 H 700"/><path class="ar" d="M700 229 l9 5 l-9 5z"/><rect class="nd" x="710" y="204" width="340" height="60" rx="12"/><text class="zh " x="726" y="223" text-anchor="start"><tspan x="726" dy="0">不依赖 GPS 的地标引导</tspan><tspan x="726" dy="22">加 “Fix my position”</tspan></text><text class="en " x="726" y="223" text-anchor="start"><tspan x="726" dy="0">Landmark guidance without GPS,</tspan><tspan x="726" dy="22">plus “Fix my position”</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 316, 290 316"/><rect class="nd or" x="290" y="286" width="320" height="60" rx="12"/><text class="zh b" x="306" y="305" text-anchor="start"><tspan x="306" dy="0">需要置信信号</tspan><tspan x="306" dy="22">与备选方案</tspan></text><text class="en b" x="306" y="305" text-anchor="start"><tspan x="306" dy="0">Riders want a confidence</tspan><tspan x="306" dy="22">signal and a plan B</tspan></text><path class="ln or" d="M610 316 H 700"/><path class="ar" d="M700 311 l9 5 l-9 5z"/><rect class="nd" x="710" y="286" width="340" height="60" rx="12"/><text class="zh " x="726" y="305" text-anchor="start"><tspan x="726" dy="0">白话状态卡 +</tspan><tspan x="726" dy="22">排序后的备选路线</tspan></text><text class="en " x="726" y="305" text-anchor="start"><tspan x="726" dy="0">Plain status card +</tspan><tspan x="726" dy="22">ranked backup routes</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 398, 290 398"/><rect class="nd or" x="290" y="368" width="320" height="60" rx="12"/><text class="zh b" x="306" y="387" text-anchor="start"><tspan x="306" dy="0">老通勤者</tspan><tspan x="306" dy="22">有自己的一套系统</tspan></text><text class="en b" x="306" y="387" text-anchor="start"><tspan x="306" dy="0">Experienced commuters</tspan><tspan x="306" dy="22">run personal systems</tspan></text><path class="ln or" d="M610 398 H 700"/><path class="ar" d="M700 393 l9 5 l-9 5z"/><rect class="nd" x="710" y="368" width="340" height="60" rx="12"/><text class="zh " x="726" y="387" text-anchor="start"><tspan x="726" dy="0">支持既有习惯：</tspan><tspan x="726" dy="22">可保留原计划、可手动修正</tspan></text><text class="en " x="726" y="387" text-anchor="start"><tspan x="726" dy="0">Support habits: keep the plan,</tspan><tspan x="726" dy="22">allow manual fixes</tspan></text><path class="ln or" d="M210 280 C 250 280, 250 480, 290 480"/><rect class="nd or" x="290" y="450" width="320" height="60" rx="12"/><text class="zh b" x="306" y="469" text-anchor="start"><tspan x="306" dy="0">反复查看</tspan><tspan x="306" dy="22">消耗注意力</tspan></text><text class="en b" x="306" y="469" text-anchor="start"><tspan x="306" dy="0">Repeated checking</tspan><tspan x="306" dy="22">drains attention</tspan></text><path class="ln or" d="M610 480 H 700"/><path class="ar" d="M700 475 l9 5 l-9 5z"/><rect class="nd" x="710" y="450" width="340" height="60" rx="12"/><text class="zh " x="726" y="469" text-anchor="start"><tspan x="726" dy="0">一眼读完：状态与</tspan><tspan x="726" dy="22">下一步是最大的元素</tspan></text><text class="en " x="726" y="469" text-anchor="start"><tspan x="726" dy="0">One-glance read: status and</tspan><tspan x="726" dy="22">next action are largest</tspan></text></svg></div></div>
+</div></section>
+<section class="ch alt" id="c-user" data-nav="用户与旅程|Persona"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">03 · <span class="zh">用户画像与旅程</span><span class="en">Persona and journey</span></span></div><h2><span class="zh">旅程的低谷在换乘，设计因此聚焦第 3 阶段</span><span class="en">The journey bottoms out at the transfer, so the design focuses on phase 3</span></h2></div>
+<div class="g2"><div><span class="lbl k"><span class="zh">画像：Jamie Park，21 岁，悉尼外围通勤者</span><span class="en">Persona: Jamie Park, 21, outer-Sydney commuter</span></span><div class="card"><p class="insight" style="font-size:17px">“<span class="zh">每次换乘都是一次小赌博。我有自己的办法，但一条错误信息就能毁掉整个早晨。</span><span class="en">Every transfer is a small gamble. I have my own tricks, but one bad piece of information can undo my whole morning.</span>”</p><ul class="ethic ok" style="margin-top:10px;font-size:14px"><li><span class="zh">每周 3–4 天通勤，每趟 1–3 次换乘</span><span class="en">3–4 days a week, 1–3 transfers per trip</span></li><li><span class="zh">出发前、车上、换乘前都查应用，并与实物标识核对</span><span class="en">Checks the app before leaving, on board and before each transfer, and cross-checks signage</span></li><li><span class="zh">核心张力：例行与掌控，对比突如其来的不确定</span><span class="en">Core tension: routine and control versus sudden uncertainty</span></li></ul></div></div><div><span class="lbl k"><span class="zh">体验故事：多米诺效应</span><span class="en">Experience story: the domino effect</span></span><div class="card"><p style="font-size:14.5px;color:var(--ink-2)"><span class="zh">应用显示换乘“准点”，列车实际晚了 2 分钟却没有更新。3 分钟的缓冲不到 1 分钟，Jamie 只能随人群冲刺。<b>让人恼火的是，每天依赖的工具在最关键的时刻给了错误的信心。</b></span><span class="en">The app says “On Time”, but the train is two minutes late and nothing updates. A three-minute buffer drops under one and Jamie sprints with the crowd. <b>The frustration is false confidence from the daily tool at the moment it mattered.</b></span></p></div></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">旅程四阶段</span><span class="en">Four journey phases</span></span><ol class="flow" style="--n:4"><li><i>1</i><b><span class="zh">1 计划与出门</span><span class="en">1 Planning</span></b><span class="d"><span class="zh">中性 · “现在出发吗”提示</span><span class="en">Neutral · “leave now” nudge</span></span></li><li><i>2</i><b><span class="zh">2 前往车站</span><span class="en">2 First leg</span></b><span class="d"><span class="zh">平静 · 清晰的等候点</span><span class="en">Calm · clear waiting spots</span></span></li><li class=low><i>3</i><b><span class="zh">3 换乘</span><span class="en">3 Transfer</span></b><span class="d"><span class="zh">低谷 · 显示信心，而非仅“准点”</span><span class="en">Low point · show confidence, not just “on time”</span></span></li><li><i>4</i><b><span class="zh">4 第二段与到达</span><span class="en">4 Arrival</span></b><span class="d"><span class="zh">恢复 · 到达站拥挤度</span><span class="en">Recovery · arrival crowding</span></span></li></ol></div>
+<div class="blk"><figure><div class="fig light" data-zoom="media/journey.webp"><img src="media/journey.webp" alt="User journey map" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh"><b>用户旅程图</b>：行动、想法、技术使用、情绪与影响因素。</span><span class="en"><b>User journey map:</b> actions, thoughts, technology use, emotions and influencing factors.</span></figcaption></figure></div>
+</div></section>
+<section class="qband" aria-label="Insight"><div class="wrap"><span class="lbl"><span class="zh">核心洞察</span><span class="en">Core insight</span></span><h2><span class="zh">用户要的不是更快的交通，而是更诚实的交通信息。</span><span class="en">Riders do not want faster transport. They want more honest transport information.</span></h2></div></section>
+<section class="ch" id="c-concept" data-nav="概念|Concepts"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">04 · <span class="zh">概念选择</span><span class="en">Concept selection</span></span></div><h2><span class="zh">两个概念对照研究低谷，选择决策层并并入站内引导</span><span class="en">Two concepts against the research low point; the decision layer wins, with guidance folded in</span></h2></div>
+<div class="g2"><div class="card"><span class="lbl k"><span class="zh">概念 1 · Transfer Coach 决策层</span><span class="en">Concept 1 · Transfer Coach, a decision layer</span></span><p style="font-size:14.5px;color:var(--ink-2)"><span class="zh">把实时数据转成一个明确的下一步，服务上车前 3–10 分钟。流程：监测 → 预警 → 指引 → 恢复。</span><span class="en">Turns live data into one confident next move for the 3–10 minutes before boarding. Flow: monitor → warn → direct → recover.</span></p></div><div class="card"><span class="lbl k"><span class="zh">概念 2 · Station Flow 步行引导</span><span class="en">Concept 2 · Station Flow, walking guidance</span></span><p style="font-size:14.5px;color:var(--ink-2)"><span class="zh">用指南针与步数在每个转弯提示，可振动或耳机语音，覆盖步行段。流程：检测 → 定向 → 引导 → 确认。</span><span class="en">Uses compass and step count for turn cues, with vibration or earbuds, for the walk. Flow: detect → orient → guide → confirm.</span></p></div></div>
+<div class="blk tw mx"><table><thead><tr><th><span class="zh">评估标准</span><span class="en">Criterion</span></th><th class="dotc">Transfer Coach</th><th class="dotc">Station Flow</th></tr></thead><tbody><tr><td><span class="zh">针对研究低谷（换乘决策）</span><span class="en">Addresses the research low point</span></td><td class="dotc"><span class="dt f"></span></td><td class="dotc"><span class="dt h"></span></td></tr><tr><td><span class="zh">针对信任问题（虚假“准点”）</span><span class="en">Addresses the trust problem</span></td><td class="dotc"><span class="dt f"></span></td><td class="dotc"><span class="dt h"></span></td></tr><tr><td><span class="zh">针对无 GPS 的寻路</span><span class="en">Wayfinding without GPS</span></td><td class="dotc"><span class="dt e"></span></td><td class="dotc"><span class="dt f"></span></td></tr><tr><td><span class="zh">点击原型的可行性</span><span class="en">Feasibility in a clickable prototype</span></td><td class="dotc"><span class="dt f"></span></td><td class="dotc"><span class="dt h"></span></td></tr></tbody></table></div><div class="legend2" style="margin-top:8px"><span><span class="dt f"></span> <span class="zh">直接</span><span class="en">Direct</span></span><span><span class="dt h"></span> <span class="zh">部分或间接</span><span class="en">Partial or indirect</span></span><span><span class="dt e"></span> <span class="zh">不覆盖</span><span class="en">Not covered</span></span></div><p class="para" style="margin-top:12px"><span class="zh"><b>决定：</b>选 Transfer Coach，并并入预置的地标步骤（选出口、换层、转弯、过马路）。触觉提示与捷径库留作下一步。</span><span class="en"><b>Decision:</b> Transfer Coach, with pre-loaded landmark steps (exit choice, level changes, turns, crossings) folded in. Haptic cues and a shortcut library are next steps.</span></p>
+</div></section>
+<section class="ch alt" id="c-design" data-nav="方案|Solution"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">05 · <span class="zh">方案与原型</span><span class="en">Solution and prototypes</span></span></div><h2><span class="zh">在现有实时数据之上加一层决策层，38 屏覆盖全程与每种异常</span><span class="en">A decision layer on top of existing live data: 38 screens for the whole trip and every disruption</span></h2></div>
+<span class="lbl k"><span class="zh">原型四个版本，各回答一个问题</span><span class="en">Four versions, one question each</span></span>
+<ol class="flow sm" style="--n:4"><li><i>1</i><b><span class="zh">v1 低保真</span><span class="en">v1 Low-fi</span></b><span class="d"><span class="zh">需要哪些屏幕与流程？</span><span class="en">Which screens and flows?</span></span></li><li><i>2</i><b><span class="zh">v2 中保真 · 21 屏</span><span class="en">v2 Mid-fi · 21 screens</span></b><span class="d"><span class="zh">用户能跟上吗？用于可用性测试</span><span class="en">Can people follow it? Used for usability tests</span></span></li><li><i>3</i><b><span class="zh">v3 高保真 · 38 屏</span><span class="en">v3 Hi-fi · 38 screens</span></b><span class="d"><span class="zh">修改有效吗？用于体验评估</span><span class="en">Do fixes work? Used for experience evaluation</span></span></li><li><i>4</i><b><span class="zh">v4 最终与网页原型</span><span class="en">v4 Final and web demo</span></b><span class="d"><span class="zh">端到端是否连贯？</span><span class="en">Coherent end to end?</span></span></li></ol>
+<div class="blk" style="margin-top:14px"><figure><div class="fig light" data-zoom="media/lf1.webp"><img src="media/lf1.webp" alt="Low-fidelity trip screens" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh">行程与换乘：倒计时、“我赶得上吗？”</span><span class="en">Trip and transfer: countdown, “Can I make it?”</span></figcaption></figure></div>
+<div class="g2" style="margin-top:14px"><figure><div class="fig light" data-zoom="media/lf2.webp"><img src="media/lf2.webp" alt="Low-fidelity station guidance" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh">站内逐步引导</span><span class="en">Step-by-step station guidance</span></figcaption></figure><figure><div class="fig light" data-zoom="media/lf3.webp"><img src="media/lf3.webp" alt="Low-fidelity recovery flow" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh">错过公交后的恢复</span><span class="en">Recovery after a missed bus</span></figcaption></figure></div>
+<div class="blk"><span class="lbl k"><span class="zh">过程材料：v2 中保真全部 21 屏 → v3 高保真概览</span><span class="en">Process material: all 21 v2 mid-fi screens → v3 hi-fi overview</span></span><div class="g2" style="align-items:start"><div><div class="fig tall light" data-zoom="media/midfi.webp"><img src="media/midfi.webp" alt="Mid-fidelity flow, all 21 screens" loading="lazy"></div><figcaption><span class="zh"><b>v2 中保真</b>（21 屏，可点击放大）：用于可用性测试，部分屏幕未链接，由主持人手动切换。</span><span class="en"><b>v2 mid-fi</b> (21 screens, tap to enlarge): used for usability tests; unlinked screens were advanced by hand.</span></figcaption></div><div><figure><div class="fig light" data-zoom="media/hifi-overview.webp"><img src="media/hifi-overview.webp" alt="Hi-fi overview" loading="lazy"><span class="z"><span class="zh">放大</span><span class="en">Zoom</span></span></div><figcaption><span class="zh"><b>v3 高保真概览</b>（38 屏中的 8 屏）：评估之后重建。</span><span class="en"><b>v3 hi-fi overview</b> (8 of 38 screens): rebuilt after the evaluation.</span></figcaption></figure></div></div></div>
+<div class="blk g2"><div><span class="lbl k"><span class="zh">功能结构树（点编号看屏幕）</span><span class="en">Feature tree (tap a number to see the screen)</span></span><ul class="tree"><li><span class="n root">Transfer Coach · 38 <span class="zh">屏</span><span class="en">screens</span></span><ul><li><span class="n tab">Plan</span><ul><li><span class="n"><span class="zh">欢迎与规划</span><span class="en">Welcome and planning</span></span><small>01–05</small><span class="chips"><button type="button" data-zoom="demo/screens/01.webp" data-cur="SCREEN 01">01</button><button type="button" data-zoom="demo/screens/02.webp" data-cur="SCREEN 02">02</button><button type="button" data-zoom="demo/screens/03.webp" data-cur="SCREEN 03">03</button><button type="button" data-zoom="demo/screens/04.webp" data-cur="SCREEN 04">04</button><button type="button" data-zoom="demo/screens/05.webp" data-cur="SCREEN 05">05</button></span></li></ul></li><li><span class="n tab">Your trip</span><ul><li><span class="n"><span class="zh">行程总览</span><span class="en">Trip overview</span></span><small>06</small><span class="chips"><button type="button" data-zoom="demo/screens/06.webp" data-cur="SCREEN 06">06</button></span></li><li><span class="n"><span class="zh">列车段</span><span class="en">Train leg</span></span><small>08–11</small><span class="chips"><button type="button" data-zoom="demo/screens/08.webp" data-cur="SCREEN 08">08</button><button type="button" data-zoom="demo/screens/09.webp" data-cur="SCREEN 09">09</button><button type="button" data-zoom="demo/screens/10.webp" data-cur="SCREEN 10">10</button><button type="button" data-zoom="demo/screens/11.webp" data-cur="SCREEN 11">11</button></span></li><li><span class="n"><span class="zh">列车恢复</span><span class="en">Train recovery</span></span><small>12–15</small><span class="chips"><button type="button" data-zoom="demo/screens/12.webp" data-cur="SCREEN 12">12</button><button type="button" data-zoom="demo/screens/13.webp" data-cur="SCREEN 13">13</button><button type="button" data-zoom="demo/screens/14.webp" data-cur="SCREEN 14">14</button><button type="button" data-zoom="demo/screens/15.webp" data-cur="SCREEN 15">15</button></span></li><li><span class="n"><span class="zh">直达公交</span><span class="en">Direct bus route</span></span><small>16–17</small><span class="chips"><button type="button" data-zoom="demo/screens/16.webp" data-cur="SCREEN 16">16</button><button type="button" data-zoom="demo/screens/17.webp" data-cur="SCREEN 17">17</button></span></li><li><span class="n"><span class="zh">坐过站恢复</span><span class="en">Wrong-stop recovery</span></span><small>18–20</small><span class="chips"><button type="button" data-zoom="demo/screens/18.webp" data-cur="SCREEN 18">18</button><button type="button" data-zoom="demo/screens/19.webp" data-cur="SCREEN 19">19</button><button type="button" data-zoom="demo/screens/20.webp" data-cur="SCREEN 20">20</button></span></li><li><span class="n"><span class="zh">Central 换乘</span><span class="en">Transfer at Central</span></span><small>21–29</small><span class="chips"><button type="button" data-zoom="demo/screens/21.webp" data-cur="SCREEN 21">21</button><button type="button" data-zoom="demo/screens/22.webp" data-cur="SCREEN 22">22</button><button type="button" data-zoom="demo/screens/23.webp" data-cur="SCREEN 23">23</button><button type="button" data-zoom="demo/screens/24.webp" data-cur="SCREEN 24">24</button><button type="button" data-zoom="demo/screens/25.webp" data-cur="SCREEN 25">25</button><button type="button" data-zoom="demo/screens/26.webp" data-cur="SCREEN 26">26</button><button type="button" data-zoom="demo/screens/27.webp" data-cur="SCREEN 27">27</button><button type="button" data-zoom="demo/screens/28.webp" data-cur="SCREEN 28">28</button><button type="button" data-zoom="demo/screens/29.webp" data-cur="SCREEN 29">29</button></span></li><li><span class="n"><span class="zh">公交段与恢复</span><span class="en">Bus leg and recovery</span></span><small>30–34, 36–38</small><span class="chips"><button type="button" data-zoom="demo/screens/30.webp" data-cur="SCREEN 30">30</button><button type="button" data-zoom="demo/screens/31.webp" data-cur="SCREEN 31">31</button><button type="button" data-zoom="demo/screens/32.webp" data-cur="SCREEN 32">32</button><button type="button" data-zoom="demo/screens/33.webp" data-cur="SCREEN 33">33</button><button type="button" data-zoom="demo/screens/34.webp" data-cur="SCREEN 34">34</button><button type="button" data-zoom="demo/screens/36.webp" data-cur="SCREEN 36">36</button><button type="button" data-zoom="demo/screens/37.webp" data-cur="SCREEN 37">37</button><button type="button" data-zoom="demo/screens/38.webp" data-cur="SCREEN 38">38</button></span></li><li><span class="n"><span class="zh">到达</span><span class="en">Arrival</span></span><small>35</small><span class="chips"><button type="button" data-zoom="demo/screens/35.webp" data-cur="SCREEN 35">35</button></span></li></ul></li><li><span class="n tab">Alerts</span><ul><li><span class="n"><span class="zh">服务提醒（说明对本次行程的影响）</span><span class="en">Service alerts (impact on this trip)</span></span><small>07</small><span class="chips"><button type="button" data-zoom="demo/screens/07.webp" data-cur="SCREEN 07">07</button></span></li></ul></li></ul></li></ul></div><div><span class="lbl k"><span class="zh">设计原则</span><span class="en">Design principles</span></span><ul class="ethic ok" style="font-size:14px"><li><span class="zh"><b>状态优先</b>：当前状态与下一步永远最大</span><span class="en"><b>Status first:</b> current state and next action are always largest</span></li><li><span class="zh"><b>两个时钟</b>：下一班车与目的地时间分开</span><span class="en"><b>Two clocks:</b> next service and destination stay separate</span></li><li><span class="zh"><b>说明依据</b>：实时标签、更新时间、“延误已计入”</span><span class="en"><b>Show the basis:</b> live label, update time, “delay included”</span></li><li><span class="zh"><b>贴近现实的词</b>：“You’re at Stand C”</span><span class="en"><b>Words that match the world:</b> “You’re at Stand C”</span></li><li><span class="zh"><b>没有死胡同</b>：选择备选后直接开始引导</span><span class="en"><b>No dead ends:</b> choosing an option starts guidance</span></li><li><span class="zh"><b>不同问题不同状态</b>：延误与错过的颜色与措辞不同</span><span class="en"><b>Different states:</b> delays and misses differ in colour and wording</span></li></ul><span class="lbl k" style="margin-top:14px"><span class="zh">视觉系统</span><span class="en">Visual system</span></span><div class="card"><p style="font-size:14px;color:var(--ink-2)"><span class="zh">三个标签页（Plan、Your trip、Alerts）。暖纸色表示正常，深色卡片表示实时倒计时，<b style="color:#C98A1B">琥珀色</b>表示延误，<b style="color:#4A6FB5">蓝色</b>表示恢复。到达时间总是与“比活动早几分钟”成对出现。</span><span class="en">Three tabs (Plan, Your trip, Alerts). Warm paper for normal states, dark cards for live countdowns, <b style="color:#C98A1B">amber</b> for delays, <b style="color:#4A6FB5">blue</b> for recovery. Arrival time always comes with minutes before the event.</span></p></div></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">用户流程：主流程与 5 类异常分支</span><span class="en">User flow: main path and five disruption branches</span></span><div class="dsc"><svg viewBox="0 0 1180 312" role="img" aria-label="User flow with disruption branches"><text class="zh h" x="15" y="22" text-anchor="start"><tspan x="15" dy="0">主流程</tspan></text><text class="en h" x="15" y="22" text-anchor="start"><tspan x="15" dy="0">MAIN FLOW</tspan></text><text class="zh h" x="15" y="128" text-anchor="start"><tspan x="15" dy="0">异常分支与恢复</tspan></text><text class="en h" x="15" y="128" text-anchor="start"><tspan x="15" dy="0">DISRUPTIONS AND RECOVERY</tspan></text><rect class="nd dk" x="15" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="80" y="62" text-anchor="middle"><tspan x="80" dy="0">规划</tspan></text><text class="en w b" x="80" y="62" text-anchor="middle"><tspan x="80" dy="0">Plan</tspan></text><text class="zh s w" x="80" y="83" text-anchor="middle"><tspan x="80" dy="0">01–07</tspan></text><text class="en s w" x="80" y="83" text-anchor="middle"><tspan x="80" dy="0">01–07</tspan></text><path class="ln" d="M145 72 H185"/><path class="ar" d="M185 67 l8 5 l-8 5z"/><rect class="nd dk" x="185" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="250" y="62" text-anchor="middle"><tspan x="250" dy="0">列车段</tspan></text><text class="en w b" x="250" y="62" text-anchor="middle"><tspan x="250" dy="0">Train leg</tspan></text><text class="zh s w" x="250" y="83" text-anchor="middle"><tspan x="250" dy="0">08–11</tspan></text><text class="en s w" x="250" y="83" text-anchor="middle"><tspan x="250" dy="0">08–11</tspan></text><path class="ln" d="M315 72 H355"/><path class="ar" d="M355 67 l8 5 l-8 5z"/><rect class="nd dk" x="355" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="420" y="62" text-anchor="middle"><tspan x="420" dy="0">Central 换乘</tspan></text><text class="en w b" x="420" y="62" text-anchor="middle"><tspan x="420" dy="0">Transfer</tspan></text><text class="zh s w" x="420" y="83" text-anchor="middle"><tspan x="420" dy="0">21–22</tspan></text><text class="en s w" x="420" y="83" text-anchor="middle"><tspan x="420" dy="0">21–22</tspan></text><path class="ln" d="M485 72 H525"/><path class="ar" d="M525 67 l8 5 l-8 5z"/><rect class="nd dk" x="525" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="590" y="62" text-anchor="middle"><tspan x="590" dy="0">站内引导</tspan></text><text class="en w b" x="590" y="62" text-anchor="middle"><tspan x="590" dy="0">Guidance</tspan></text><text class="zh s w" x="590" y="83" text-anchor="middle"><tspan x="590" dy="0">23–28</tspan></text><text class="en s w" x="590" y="83" text-anchor="middle"><tspan x="590" dy="0">23–28</tspan></text><path class="ln" d="M655 72 H695"/><path class="ar" d="M695 67 l8 5 l-8 5z"/><rect class="nd dk" x="695" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="760" y="62" text-anchor="middle"><tspan x="760" dy="0">到达 C 站台</tspan></text><text class="en w b" x="760" y="62" text-anchor="middle"><tspan x="760" dy="0">At Stand C</tspan></text><text class="zh s w" x="760" y="83" text-anchor="middle"><tspan x="760" dy="0">29</tspan></text><text class="en s w" x="760" y="83" text-anchor="middle"><tspan x="760" dy="0">29</tspan></text><path class="ln" d="M825 72 H865"/><path class="ar" d="M865 67 l8 5 l-8 5z"/><rect class="nd dk" x="865" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="930" y="62" text-anchor="middle"><tspan x="930" dy="0">公交段</tspan></text><text class="en w b" x="930" y="62" text-anchor="middle"><tspan x="930" dy="0">Bus leg</tspan></text><text class="zh s w" x="930" y="83" text-anchor="middle"><tspan x="930" dy="0">30 · 34</tspan></text><text class="en s w" x="930" y="83" text-anchor="middle"><tspan x="930" dy="0">30 · 34</tspan></text><path class="ln" d="M995 72 H1035"/><path class="ar" d="M1035 67 l8 5 l-8 5z"/><rect class="nd dk" x="1035" y="40" width="130" height="64" rx="12"/><text class="zh w b" x="1100" y="62" text-anchor="middle"><tspan x="1100" dy="0">到达</tspan></text><text class="en w b" x="1100" y="62" text-anchor="middle"><tspan x="1100" dy="0">Arrive</tspan></text><text class="zh s w" x="1100" y="83" text-anchor="middle"><tspan x="1100" dy="0">35</tspan></text><text class="en s w" x="1100" y="83" text-anchor="middle"><tspan x="1100" dy="0">35</tspan></text><path class="ln am" d="M250 104 V150 H70 M250 150 H360"/><path class="ln am" d="M70 150 V196"/><path class="ar am" d="M65 190 l5 8 l5 -8z"/><rect class="nd am" x="5" y="198" width="130" height="58" rx="12"/><text class="zh b" x="70" y="218" text-anchor="middle"><tspan x="70" dy="0">列车延误</tspan></text><text class="en b" x="70" y="218" text-anchor="middle"><tspan x="70" dy="0">Train delayed</tspan></text><text class="zh s" x="70" y="238" text-anchor="middle"><tspan x="70" dy="0">12 → 13</tspan></text><text class="en s" x="70" y="238" text-anchor="middle"><tspan x="70" dy="0">12 → 13</tspan></text><path class="ln am" d="M215 150 V196"/><path class="ar am" d="M210 190 l5 8 l5 -8z"/><rect class="nd am" x="150" y="198" width="130" height="58" rx="12"/><text class="zh b" x="215" y="218" text-anchor="middle"><tspan x="215" dy="0">错过列车</tspan></text><text class="en b" x="215" y="218" text-anchor="middle"><tspan x="215" dy="0">Missed train</tspan></text><text class="zh s" x="215" y="238" text-anchor="middle"><tspan x="215" dy="0">14 · 15 → 16–17</tspan></text><text class="en s" x="215" y="238" text-anchor="middle"><tspan x="215" dy="0">14 · 15 → 16–17</tspan></text><path class="ln am" d="M360 150 V196"/><path class="ar am" d="M355 190 l5 8 l5 -8z"/><rect class="nd am" x="295" y="198" width="130" height="58" rx="12"/><text class="zh b" x="360" y="218" text-anchor="middle"><tspan x="360" dy="0">坐过站</tspan></text><text class="en b" x="360" y="218" text-anchor="middle"><tspan x="360" dy="0">Wrong stop</tspan></text><text class="zh s" x="360" y="238" text-anchor="middle"><tspan x="360" dy="0">18–20</tspan></text><text class="en s" x="360" y="238" text-anchor="middle"><tspan x="360" dy="0">18–20</tspan></text><path class="ln bl" d="M70 256 V298 H215 V256"/><path class="ln bl" d="M425 227 H440 V108"/><path class="ar bl" d="M435 112 l5 -8 l5 8z"/><path class="ln am" d="M930 104 V150 H775"/><path class="ln am" d="M775 150 V196"/><path class="ar am" d="M770 190 l5 8 l5 -8z"/><rect class="nd am" x="700" y="198" width="150" height="58" rx="12"/><text class="zh b" x="775" y="218" text-anchor="middle"><tspan x="775" dy="0">公交延误</tspan></text><text class="en b" x="775" y="218" text-anchor="middle"><tspan x="775" dy="0">Bus delayed</tspan></text><text class="zh s" x="775" y="238" text-anchor="middle"><tspan x="775" dy="0">31</tspan></text><text class="en s" x="775" y="238" text-anchor="middle"><tspan x="775" dy="0">31</tspan></text><path class="ln bl" d="M850 227 H852"/><path class="ar bl" d="M852 222 l8 5 l-8 5z"/><rect class="nd am" x="860" y="198" width="150" height="58" rx="12"/><text class="zh b" x="935" y="218" text-anchor="middle"><tspan x="935" dy="0">选择下一步</tspan></text><text class="en b" x="935" y="218" text-anchor="middle"><tspan x="935" dy="0">Pick next move</tspan></text><text class="zh s" x="935" y="238" text-anchor="middle"><tspan x="935" dy="0">32 · 33 · 36</tspan></text><text class="en s" x="935" y="238" text-anchor="middle"><tspan x="935" dy="0">32 · 33 · 36</tspan></text><path class="ln bl" d="M1010 227 H1017"/><path class="ar bl" d="M1017 222 l8 5 l-8 5z"/><rect class="nd am" x="1025" y="198" width="150" height="58" rx="12"/><text class="zh b" x="1100" y="218" text-anchor="middle"><tspan x="1100" dy="0">换到 D 站台</tspan></text><text class="en b" x="1100" y="218" text-anchor="middle"><tspan x="1100" dy="0">Switch to Stand D</tspan></text><text class="zh s" x="1100" y="238" text-anchor="middle"><tspan x="1100" dy="0">37 · 38</tspan></text><text class="en s" x="1100" y="238" text-anchor="middle"><tspan x="1100" dy="0">37 · 38</tspan></text><path class="ln bl" d="M1100 198 V108"/><path class="ar bl" d="M1095 112 l5 -8 l5 8z"/></svg></div><div class="legend"><span><i style="background:#2B211C"></i><span class="zh">主流程</span><span class="en">Main flow</span></span><span><i style="background:#C98A1B"></i><span class="zh">触发异常</span><span class="en">Disruption</span></span><span><i style="background:#4A6FB5"></i><span class="zh">恢复并回到主流程</span><span class="en">Recovery back to the flow</span></span></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">浏览 38 屏</span><span class="en">Explore the 38 screens</span></span>
+<div class="gtabs" id="gtabs"><button type="button" aria-pressed="true"><span class="zh">欢迎与规划</span><span class="en">Welcome and planning</span><small>5</small></button><button type="button" aria-pressed="false"><span class="zh">总览与提醒</span><span class="en">Overview and alerts</span><small>2</small></button><button type="button" aria-pressed="false"><span class="zh">列车段</span><span class="en">Train leg</span><small>4</small></button><button type="button" aria-pressed="false"><span class="zh">列车恢复</span><span class="en">Train recovery</span><small>4</small></button><button type="button" aria-pressed="false"><span class="zh">直达公交</span><span class="en">Direct bus</span><small>2</small></button><button type="button" aria-pressed="false"><span class="zh">坐过站恢复</span><span class="en">Wrong stop</span><small>3</small></button><button type="button" aria-pressed="false"><span class="zh">Central 换乘</span><span class="en">Transfer at Central</span><small>9</small></button><button type="button" aria-pressed="false"><span class="zh">公交段与恢复</span><span class="en">Bus leg and recovery</span><small>8</small></button><button type="button" aria-pressed="false"><span class="zh">到达</span><span class="en">Arrival</span><small>1</small></button></div><p class="gdesc" id="gdesc"></p><div class="prail" id="prail"></div></div>
+<p class="para" style="margin-top:8px;font-size:13.5px"><span class="zh">原型含 6 个一键异常场景、行程进度条与“设计笔记”面板，每屏对应背后的研究发现；按 H 显示全部可点区域。<a href="demo/index.html" target="_blank" rel="noopener" style="text-decoration:underline">打开交互原型</a> · <a href="https://github.com/katherine0292/transfer-coach-final-prototype/blob/main/assets/prototypes/high-fidelity/transfer-coach-final-prototype.pdf" target="_blank" rel="noopener" style="text-decoration:underline">38 屏 PDF</a></span><span class="en">The prototype has six one-tap disruption scenarios, a trip progress rail and a Design notes panel tying each screen to its finding; press H to show all tappable areas. <a href="demo/index.html" target="_blank" rel="noopener" style="text-decoration:underline">Open the prototype</a> · <a href="https://github.com/katherine0292/transfer-coach-final-prototype/blob/main/assets/prototypes/high-fidelity/transfer-coach-final-prototype.pdf" target="_blank" rel="noopener" style="text-decoration:underline">All screens (PDF)</a></span></p>
+</div></section>
+<section class="ch" id="c-eval" data-nav="迭代与评估|Evaluation"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">06 · <span class="zh">迭代与评估</span><span class="en">Iteration and evaluation</span></span></div><h2><span class="zh">三种方法回答三个问题，每项改动都能追溯到发现</span><span class="en">Three methods, three questions, every change traced to a finding</span></h2></div>
+<div class="tw"><table><thead><tr><th><span class="zh">方法</span><span class="en">Method</span></th><th><span class="zh">原型</span><span class="en">Prototype</span></th><th><span class="zh">问题</span><span class="en">Question</span></th><th><span class="zh">样本</span><span class="en">Sample</span></th></tr></thead><tbody><tr><td><b><span class="zh">专家启发式评估</span><span class="en">Expert heuristic review</span></b></td><td>v2</td><td><span class="zh">哪些问题可早期低成本发现？</span><span class="en">What can be found early and cheaply?</span></td><td><span class="zh">尼尔森十条，v3 上复查</span><span class="en">Nielsen’s ten heuristics, repeated on v3</span></td></tr><tr><td><b><span class="zh">场景式可用性测试</span><span class="en">Scenario usability testing</span></b></td><td>v2</td><td><span class="zh">核心任务能否完成，卡在哪？</span><span class="en">Can core tasks be done, where do people stall?</span></td><td><span class="zh">7 位通勤者 × 3 场景，出声思考，5–10 分钟</span><span class="en">7 commuters × 3 scenarios, think-aloud, 5–10 min</span><div class="ppl"><b></b><b></b><b></b><b></b><b></b><b></b><b></b></div></td></tr><tr><td><b><span class="zh">体验评估</span><span class="en">Experience evaluation</span></b></td><td>v3</td><td><span class="zh">被打断的行程是什么感受，为什么？</span><span class="en">What does a disrupted trip feel like, and why?</span></td><td><span class="zh">2 份结构化体验日志（另有 1 份补充）</span><span class="en">2 structured journals (plus 1 supporting)</span><div class="ppl"><b class="j"></b><b class="j"></b></div></td></tr></tbody></table></div>
+<div class="blk g2"><div><span class="lbl k"><span class="zh">测试场景</span><span class="en">Test scenarios</span></span>
+<div class="tw "><table><thead><tr><th><span class="zh">场景</span><span class="en">Scenario</span></th><th><span class="zh">情境</span><span class="en">Situation</span></th><th><span class="zh">测试功能</span><span class="en">Features</span></th></tr></thead><tbody><tr><td><span class="zh">1 赶时间</span><span class="en">1 Running late</span></td><td><span class="zh">10:00 面试，列车驶向 Central</span><span class="en">Interview at 10:00, train towards Central</span></td><td><span class="zh">换乘提醒、“我赶得上吗”、选出口、逐步引导</span><span class="en">Transfer alert, “Can I make it?”, exit choice, step guidance</span></td></tr><tr><td><span class="zh">2 演唱会日，公交延误</span><span class="en">2 Concert, bus delayed</span></td><td><span class="zh">事故使 343 路在 C 站台晚约 8 分钟</span><span class="en">An accident delays Bus 343 by about 8 min</span></td><td><span class="zh">延误处理、错过换乘、备选路线、确认路线</span><span class="en">Delay handling, missed connection, backups, route confirmation</span></td></tr><tr><td><span class="zh">3 演唱会，列车延误</span><span class="en">3 Concert, train delayed</span></td><td><span class="zh">首班列车晚 3 分钟，陌生车站没有富余</span><span class="en">First train 3 min late, no spare time in an unfamiliar station</span></td><td><span class="zh">低信心警告、站内引导、恢复</span><span class="en">Low-confidence warning, guidance, recovery</span></td></tr></tbody></table></div>
+<p class="para" style="margin-top:8px;font-size:13px"><span class="zh">2026 年 10 月 1–17 日面对面进行。流程：知情同意 → 出声思考说明 → 场景卡 → 任务 → 预设异常（拨快时钟）→ 易用性与信心 1–5 分评分。部分屏幕未链接，由主持人手动切换（Wizard of Oz）。</span><span class="en">Face to face, 1–17 October 2026. Flow: consent → think-aloud → scenario card → tasks → planned disruption (clock moved forward) → ease and confidence ratings (1–5). Unlinked screens were advanced by hand (Wizard of Oz).</span></p></div>
+<div><span class="lbl k"><span class="zh">测试结果</span><span class="en">Results</span></span><div class="card"><div class="chart" id="ch1"><div class="bar2"><span><span class="zh">严重</span><span class="en">Severe</span></span><div class="tk"><i style="--v:.2;background:#B3261E"></i></div><b>1</b></div><div class="bar2"><span><span class="zh">高</span><span class="en">High</span></span><div class="tk"><i style="--v:1;background:#E8701A"></i></div><b>5</b></div><div class="bar2"><span><span class="zh">中</span><span class="en">Medium</span></span><div class="tk"><i style="--v:.4;background:#C98A1B"></i></div><b>2</b></div><div class="bar2"><span><span class="zh">低</span><span class="en">Low</span></span><div class="tk"><i style="--v:.2;background:#8C8478"></i></div><b>1</b></div></div><p class="para" style="margin-top:12px;font-size:13.5px"><span class="zh">9 条主要发现的严重度分布。延误场景中，用户对“能准时到达”的信心为 <b>3–3.5 / 5</b>；一位参与者说这“<b>就像我在对应用撒谎</b>”。有效的部分：“我赶得上吗？”拆解、带真实地标的逐步指引、错过后的平静措辞。</span><span class="en">Severity of the nine main findings. In the delay scenario, confidence in arriving on time was <b>3–3.5 out of 5</b>; one participant said it “<b>felt like I was lying to the app</b>”. What worked: the “Can I make it?” breakdown, step-by-step landmark guidance and calm wording after a miss.</span></p></div></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">v2 → v3：改动前后对照（点图放大）</span><span class="en">v2 → v3: before and after (tap to enlarge)</span></span><div class="bap"><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-05.webp" data-cur="BEFORE"><img src="media/mf-05.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 21</span><div class="im" data-zoom="demo/screens/21.webp" data-cur="AFTER"><img src="demo/screens/21.webp" alt="v3 screen 21" loading="lazy"></div></figure></div><h4><span class="zh">“High” 置信标签 → 分项状态</span><span class="en">“High” label → itemised status</span></h4><p><span class="zh">一个标签不被信任；拆成倒计时、步行、剩余时间，并加上比活动早几分钟。</span><span class="en">A single label was not trusted; split into countdown, walk and spare time, with minutes before the event.</span></p></div><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-11.webp" data-cur="BEFORE"><img src="media/mf-11.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 29</span><div class="im" data-zoom="demo/screens/29.webp" data-cur="AFTER"><img src="demo/screens/29.webp" alt="v3 screen 29" loading="lazy"></div></figure></div><h4><span class="zh">“Transfer complete” → “You’re at Stand C”</span><span class="en">“Transfer complete” → “You’re at Stand C”</span></h4><p><span class="zh">用户还没上车，不应显示完成；到达确认只在终点出现。</span><span class="en">Riders had not boarded yet; completion appears only at the end.</span></p></div><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-12.webp" data-cur="BEFORE"><img src="media/mf-12.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 31</span><div class="im" data-zoom="demo/screens/31.webp" data-cur="AFTER"><img src="demo/screens/31.webp" alt="v3 screen 31" loading="lazy"></div></figure></div><h4><span class="zh">“2 min” → 延误状态</span><span class="en">“2 min” → delayed state</span></h4><p><span class="zh">旧时间划线、新时间、+8 min、延误已计入、更新时间。</span><span class="en">Old time struck through, new time, +8 min, delay included, update time.</span></p></div><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-14.webp" data-cur="BEFORE"><img src="media/mf-14.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 32</span><div class="im" data-zoom="demo/screens/32.webp" data-cur="AFTER"><img src="demo/screens/32.webp" alt="v3 screen 32" loading="lazy"></div></figure></div><h4><span class="zh">备选路线 → 按到达时间排序的卡片</span><span class="en">Backup list → cards by arrival time</span></h4><p><span class="zh">先给到达时间，再给等待或步行，以及比活动早的分钟数。</span><span class="en">Lead with arrival time, then wait or walk and minutes before the event.</span></p></div><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-08.webp" data-cur="BEFORE"><img src="media/mf-08.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 25</span><div class="im" data-zoom="demo/screens/25.webp" data-cur="AFTER"><img src="demo/screens/25.webp" alt="v3 screen 25" loading="lazy"></div></figure></div><h4><span class="zh">“Level +1” → 象形图</span><span class="en">“Level +1” → pictogram</span></h4><p><span class="zh">去掉技术用语，用象形图与 “Take the escalator”。</span><span class="en">Technical wording replaced by a pictogram and “Take the escalator”.</span></p></div><div><div class="pp"><figure><span class="tg2">v2 MID-FI</span><div class="im" data-zoom="media/mf-01.webp" data-cur="BEFORE"><img src="media/mf-01.webp" alt="v2 screen" loading="lazy"></div></figure><span class="arw">→</span><figure><span class="tg2 new">v3 HI-FI · 01</span><div class="im" data-zoom="demo/screens/01.webp" data-cur="AFTER"><img src="demo/screens/01.webp" alt="v3 screen 01" loading="lazy"></div></figure></div><h4><span class="zh">中保真 → 品牌化视觉系统</span><span class="en">Mid-fi → branded visual system</span></h4><p><span class="zh">从通用青绿界面，转为 TripView 的暖色体系。</span><span class="en">From a generic teal UI to TripView’s warm system.</span></p></div></div></div>
+<div class="blk"><span class="lbl k"><span class="zh">发现 → 设计改动 → 最终屏幕</span><span class="en">Finding → design change → final screens</span></span><div class="flt" id="flt"><button type="button" data-f="all" aria-pressed="true"><span class="zh">全部</span><span class="en">All</span></button><button type="button" data-f="hi" aria-pressed="false"><span class="zh">严重 / 高</span><span class="en">Severe / High</span></button><button type="button" data-f="lo" aria-pressed="false"><span class="zh">中 / 低</span><span class="en">Medium / Low</span></button></div><div class="tw"><table id="fnd"><thead><tr><th><span class="zh">严重度</span><span class="en">Severity</span></th><th><span class="zh">发现</span><span class="en">Finding</span></th><th><span class="zh">设计改动</span><span class="en">Design change</span></th><th><span class="zh">屏幕</span><span class="en">Screens</span></th></tr></thead><tbody><tr data-sev="1"><td><span class="sev s1"><span class="zh">严重</span><span class="en">Severe</span></span></td><td><span class="zh">没有“延误”状态：应用显示 2 分钟，站牌显示晚 8 分钟，唯一选项是“车已开走”</span><span class="en">No delayed state: the app said 2 min, the stop display said 8 min late, and the only option was “The bus has already left”</span></td><td><span class="zh">新增延误状态（旧时间划线、新时间、+8 min、延误已计入、更新时间）</span><span class="en">A delayed state: struck-through old time, new time, +8 min, delay included, update time</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/12.webp" data-cur="SCREEN 12" aria-label="Screen 12"><img src="demo/screens/12.webp" alt="Screen 12" loading="lazy"></button><button type="button" data-zoom="demo/screens/31.webp" data-cur="SCREEN 31" aria-label="Screen 31"><img src="demo/screens/31.webp" alt="Screen 31" loading="lazy"></button></div></td></tr><tr data-sev="2"><td><span class="sev s2"><span class="zh">高</span><span class="en">High</span></span></td><td><span class="zh">“Transfer complete” 在上车前出现</span><span class="en">“Transfer complete” appeared before boarding</span></td><td><span class="zh">改为 “You’re at Stand C”</span><span class="en">Now “You’re at Stand C”</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/29.webp" data-cur="SCREEN 29" aria-label="Screen 29"><img src="demo/screens/29.webp" alt="Screen 29" loading="lazy"></button><button type="button" data-zoom="demo/screens/35.webp" data-cur="SCREEN 35" aria-label="Screen 35"><img src="demo/screens/35.webp" alt="Screen 35" loading="lazy"></button></div></td></tr><tr data-sev="2"><td><span class="sev s2"><span class="zh">高</span><span class="en">High</span></span></td><td><span class="zh">备选路线难比较：到达时间是灰色小字，推荐路线反而更慢</span><span class="en">Backups hard to compare: arrival was small grey text and the recommended route was slower</span></td><td><span class="zh">卡片先给到达时间，再给等待与比活动提前的分钟数</span><span class="en">Cards lead with arrival time, wait, and minutes before the event</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/13.webp" data-cur="SCREEN 13" aria-label="Screen 13"><img src="demo/screens/13.webp" alt="Screen 13" loading="lazy"></button><button type="button" data-zoom="demo/screens/15.webp" data-cur="SCREEN 15" aria-label="Screen 15"><img src="demo/screens/15.webp" alt="Screen 15" loading="lazy"></button><button type="button" data-zoom="demo/screens/32.webp" data-cur="SCREEN 32" aria-label="Screen 32"><img src="demo/screens/32.webp" alt="Screen 32" loading="lazy"></button><button type="button" data-zoom="demo/screens/36.webp" data-cur="SCREEN 36" aria-label="Screen 36"><img src="demo/screens/36.webp" alt="Screen 36" loading="lazy"></button></div></td></tr><tr data-sev="2"><td><span class="sev s2"><span class="zh">高</span><span class="en">High</span></span></td><td><span class="zh">用户总在脑中拿每个时间与截止时间比</span><span class="en">Riders compared every time with their deadline in their heads</span></td><td><span class="zh">统一显示 “min before 10:30”</span><span class="en">“Min before 10:30” everywhere</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/03.webp" data-cur="SCREEN 03" aria-label="Screen 3"><img src="demo/screens/03.webp" alt="Screen 3" loading="lazy"></button><button type="button" data-zoom="demo/screens/10.webp" data-cur="SCREEN 10" aria-label="Screen 10"><img src="demo/screens/10.webp" alt="Screen 10" loading="lazy"></button><button type="button" data-zoom="demo/screens/21.webp" data-cur="SCREEN 21" aria-label="Screen 21"><img src="demo/screens/21.webp" alt="Screen 21" loading="lazy"></button></div></td></tr><tr data-sev="2"><td><span class="sev s2"><span class="zh">高</span><span class="en">High</span></span></td><td><span class="zh">选择新路线后无法开始引导</span><span class="en">No way to start guidance after choosing a route</span></td><td><span class="zh">选择即进入引导</span><span class="en">Choosing leads straight into guidance</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/16.webp" data-cur="SCREEN 16" aria-label="Screen 16"><img src="demo/screens/16.webp" alt="Screen 16" loading="lazy"></button><button type="button" data-zoom="demo/screens/37.webp" data-cur="SCREEN 37" aria-label="Screen 37"><img src="demo/screens/37.webp" alt="Screen 37" loading="lazy"></button></div></td></tr><tr data-sev="2"><td><span class="sev s2"><span class="zh">高</span><span class="en">High</span></span></td><td><span class="zh">公交明显堵着时，“High” 置信标签不可信</span><span class="en">“High” confidence not believed when the bus was visibly stuck</span></td><td><span class="zh">用白话状态卡替代标签，写明依据与更新时间</span><span class="en">A plain status card replaces the label with basis and update time</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/12.webp" data-cur="SCREEN 12" aria-label="Screen 12"><img src="demo/screens/12.webp" alt="Screen 12" loading="lazy"></button><button type="button" data-zoom="demo/screens/31.webp" data-cur="SCREEN 31" aria-label="Screen 31"><img src="demo/screens/31.webp" alt="Screen 31" loading="lazy"></button></div></td></tr><tr data-sev="3"><td><span class="sev s3"><span class="zh">中</span><span class="en">Medium</span></span></td><td><span class="zh">“室内位置不精确”让人紧张，且没说位置错了怎么办</span><span class="en">“Indoor position is approximate” unsettled people, with no fallback</span></td><td><span class="zh">地标匹配与 “Fix my position”</span><span class="en">Landmark match and “Fix my position”</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/22.webp" data-cur="SCREEN 22" aria-label="Screen 22"><img src="demo/screens/22.webp" alt="Screen 22" loading="lazy"></button><button type="button" data-zoom="demo/screens/23.webp" data-cur="SCREEN 23" aria-label="Screen 23"><img src="demo/screens/23.webp" alt="Screen 23" loading="lazy"></button></div></td></tr><tr data-sev="3"><td><span class="sev s3"><span class="zh">中</span><span class="en">Medium</span></span></td><td><span class="zh">平静的 “No need to rush” 与真实时间压力冲突</span><span class="en">A calm “No need to rush” clashed with real time pressure</span></td><td><span class="zh">用行动型提示（如 “Walk a bit faster”）取代安抚文案</span><span class="en">Action prompts (such as “Walk a bit faster”) replace reassurance</span></td><td><span style="color:var(--ink-3)">—</span></td></tr><tr data-sev="4"><td><span class="sev s4"><span class="zh">低</span><span class="en">Low</span></span></td><td><span class="zh">“Level +1” 像工程术语，还像链接</span><span class="en">“Level +1” felt technical and looked like a link</span></td><td><span class="zh">象形图、“Head downstairs”、步骤计数</span><span class="en">Pictograms, “Head downstairs”, step counter</span></td><td><div class="thumbs"><button type="button" data-zoom="demo/screens/09.webp" data-cur="SCREEN 09" aria-label="Screen 9"><img src="demo/screens/09.webp" alt="Screen 9" loading="lazy"></button><button type="button" data-zoom="demo/screens/22.webp" data-cur="SCREEN 22" aria-label="Screen 22"><img src="demo/screens/22.webp" alt="Screen 22" loading="lazy"></button><button type="button" data-zoom="demo/screens/25.webp" data-cur="SCREEN 25" aria-label="Screen 25"><img src="demo/screens/25.webp" alt="Screen 25" loading="lazy"></button><button type="button" data-zoom="demo/screens/26.webp" data-cur="SCREEN 26" aria-label="Screen 26"><img src="demo/screens/26.webp" alt="Screen 26" loading="lazy"></button></div></td></tr></tbody></table></div></div>
+<div class="blk g2"><div><span class="lbl k"><span class="zh">13 条建议的落实状态</span><span class="en">Status of the 13 recommendations</span></span><div class="card"><div class="stack"><span style="width:61.5%;background:#2E8B57">8</span><span style="width:30.8%;background:#C98A1B">4</span><span style="width:7.7%;background:#8C8478">1</span></div><div class="legend2"><span><i style="background:#2E8B57"></i><span class="zh">完整落实 8</span><span class="en">Fully built 8</span></span><span><i style="background:#C98A1B"></i><span class="zh">部分落实 4</span><span class="en">Partly built 4</span></span><span><i style="background:#8C8478"></i><span class="zh">未完成 1（可编辑的到达时间）</span><span class="en">Open 1 (editable arrive-by)</span></span></div><p class="para" style="margin-top:10px;font-size:13.5px"><span class="zh">坐过站、错过列车、错过公交的恢复流程在 v2 中不存在，v3 补齐（屏幕 13–15、18–20、32–33、36–38）。</span><span class="en">Recovery flows for a wrong stop, a missed train and a missed bus did not exist in v2 and were added in v3 (screens 13–15, 18–20, 32–33, 36–38).</span></p></div></div><div><span class="lbl k"><span class="zh">体验评估：任务测试没发现的压力</span><span class="en">Experience evaluation: stress task testing missed</span></span><div class="tw "><table><thead><tr><th><span class="zh">问题</span><span class="en">Problem</span></th><th><span class="zh">改动</span><span class="en">Change</span></th></tr></thead><tbody><tr><td><span class="zh">时间以车辆为基准，人们以活动判断，仍要心算</span><span class="en">Time shown against the bus, people judge against the event</span></td><td><span class="zh">先给到达时间与比活动提前的分钟</span><span class="en">Lead with arrival and minutes before the event</span></td></tr><tr><td><span class="zh">不清楚新到达时间是否已含延误</span><span class="en">Unclear if the new arrival included the delay</span></td><td><span class="zh">写明 “delay included”</span><span class="en">State “delay included”</span></td></tr><tr><td><span class="zh">公交段不清楚处于哪个阶段</span><span class="en">Unclear stage during the bus leg</span></td><td><span class="zh">阶段标签与站点列表</span><span class="en">Stage labels and a stop list</span></td></tr><tr><td><span class="zh">延误信息在独立的 Alerts 页；所选路线未确认，导致一次选错</span><span class="en">Delay info on a separate tab; chosen route not confirmed, one wrong start</span></td><td><span class="zh">影响内嵌在行程里；开始按钮写明路线</span><span class="en">Impact inside the trip; route named on Start</span></td></tr></tbody></table></div></div></div>
+<p class="para" style="margin-top:14px;font-size:13.5px;max-width:none"><span class="zh"><b>局限：</b>非车站实地测试；7 位测试者与 2 份日志，结论为定性；使用演示数据；最终原型未复测。</span><span class="en"><b>Limitations:</b> tested at venues, not stations; 7 testers and 2 journals (qualitative); demo data; final prototype not retested.</span></p>
+</div></section>
+<section class="ch alt" id="c-end" data-nav="成果与反思|Outcomes"><div class="wrap">
+<div class="head"><div class="row"><span class="lbl">07 · <span class="zh">成果与反思</span><span class="en">Outcomes and reflection</span></span></div><h2><span class="zh">从功能到时刻，从观点到证据，从可用到有感受</span><span class="en">From features to moments, opinion to evidence, usable to felt</span></h2></div>
+<div class="g3">
+<div class="ncard"><span class="n">1</span><h3><span class="zh">从功能到时刻</span><span class="en">From features to moments</span></h3><p><span class="zh">以换乘的 3–10 分钟这一个真实时刻为起点，而不是功能清单。</span><span class="en">Started from one real moment, the 3–10 minutes of a transfer, not a feature list.</span></p></div>
+<div class="ncard"><span class="n">2</span><h3><span class="zh">从观点到证据</span><span class="en">From opinion to evidence</span></h3><p><span class="zh">专家评审、7 次测试与 2 份日志使屏幕改了四轮，每处改动都有出处。</span><span class="en">The review, seven sessions and two journals changed the screens four times; each change has a source.</span></p></div>
+<div class="ncard"><span class="n">3</span><h3><span class="zh">从可用到有感受</span><span class="en">From usable to felt</span></h3><p><span class="zh">好用的应用仍会让人焦虑。体验评估发现了任务测试漏掉的压力。</span><span class="en">An easy app can still cause anxiety. Experience evaluation found stress that task testing missed.</span></p></div>
+</div><div class="blk g2"><div><span class="lbl k"><span class="zh">下一步（按优先级）</span><span class="en">Next steps (by priority)</span></span>
+<div class="tw "><table><thead><tr><th><span class="zh">#</span><span class="en">#</span></th><th><span class="zh">事项</span><span class="en">Item</span></th><th><span class="zh">理由</span><span class="en">Why</span></th></tr></thead><tbody><tr><td><span class="zh">1</span><span class="en">1</span></td><td><span class="zh">在真实车站复测最终原型</span><span class="en">Retest in a real station</span></td><td><span class="zh">最关键的缺失情境</span><span class="en">The key missing context</span></td></tr><tr><td><span class="zh">2</span><span class="en">2</span></td><td><span class="zh">可编辑的“到达时间”</span><span class="en">Editable arrive-by</span></td><td><span class="zh">唯一未落实的建议</span><span class="en">The only recommendation not built</span></td></tr><tr><td><span class="zh">3</span><span class="en">3</span></td><td><span class="zh">所有状态标注 Live / Timetable</span><span class="en">Live / Timetable on every status</span></td><td><span class="zh">信任取决于它</span><span class="en">Trust depends on it</span></td></tr><tr><td><span class="zh">4</span><span class="en">4</span></td><td><span class="zh">每步引导加入“位置不对？”</span><span class="en">“Position looks wrong?” on each step</span></td><td><span class="zh">目前仅一屏可达</span><span class="en">Reachable from one screen only</span></td></tr><tr><td><span class="zh">5</span><span class="en">5</span></td><td><span class="zh">与有无障碍需求者测试</span><span class="en">Test with step-free users</span></td><td><span class="zh">已记录的参与者都没有此需求</span><span class="en">No recorded participant had the need</span></td></tr></tbody></table></div>
+</div><div><span class="lbl k"><span class="zh">说明</span><span class="en">Notes</span></span><div class="card"><p style="font-size:14px;color:var(--ink-2)"><span class="zh"><b>数据：</b>行程、时间与异常均为演示数据，未连接实时服务。<br><b>隐私：</b>引述经概括与匿名处理，不公开姓名、录音或逐字稿。<br><b>边界：</b>未训练预测模型，原型展示的是交互设计，不是预测准确性。</span><span class="en"><b>Data:</b> trips, times and disruptions are demo data; nothing is connected to live services.<br><b>Privacy:</b> quotes are summarised and anonymised; no names, recordings or transcripts are published.<br><b>Scope:</b> no prediction model was trained; the prototype shows interaction design, not predictive accuracy.</span></p></div></div></div>
+</div></section>
+<section class="ch" style="padding-bottom:0"><div class="wrap"><div class="big" aria-hidden="true">Transfer Coach</div><p class="tagline">Plan your trip. Know your next stop.</p></div><footer><div class="wrap"><div class="in"><span>Transfer Coach · <span class="zh">委托项目 · UX 研究与交互设计</span><span class="en">Commissioned project · UX research and interaction design</span></span><span><span class="zh">内容来自项目仓库文档</span><span class="en">Content from the project repository docs</span> · <a href="https://github.com/katherine0292/transfer-coach-final-prototype" target="_blank" rel="noopener" style="text-decoration:underline">GitHub</a></span></div></div></footer></section></div>
+<script>window.TC_GROUPS=[{"dz": "设定行程、比较路线、偏好与交通方式。", "de": "Set the trip, compare routes, preferences and modes.", "s": [[1, "欢迎", "Welcome"], [2, "规划行程", "Plan your trip"], [3, "选择路线", "Choose your route"], [4, "偏好", "What matters most?"], [5, "交通方式", "How will you travel?"]]}, {"dz": "一眼看全行程；说明影响的服务提醒。", "de": "The trip at a glance; alerts that explain impact.", "s": [[6, "行程总览", "Your trip at a glance"], [7, "服务提醒", "Service alerts"]]}, {"dz": "走到车站、找站台、等车、乘车、下车。", "de": "Walk, find the platform, wait, ride, get off.", "s": [[8, "走向车站", "Walk to Green Square"], [9, "找到 1 号站台", "Find Platform 1"], [10, "等 T2 列车", "Wait for Train T2"], [11, "Central 是你的下车站", "Central is your stop"]]}, {"dz": "列车延误、错过列车、改乘选择。", "de": "Delayed train, missed train, bus or train.", "s": [[12, "T2 延误", "Train T2 delayed"], [13, "选择下一步", "Pick your next move"], [14, "下一班，同站台", "Next train, same platform"], [15, "公交还是列车？", "Bus or train?"]]}, {"dz": "走到 A 站台，等 410 路。", "de": "Walk to Stand A, wait for Bus 410.", "s": [[16, "走向 A 站台", "Walk to Stand A"], [17, "等 410 路", "Waiting for Bus 410"]]}, {"dz": "坐过 Central 后经 T5 返回。", "de": "Return via T5 after riding past Central.", "s": [[18, "你在 Town Hall", "You’re at Town Hall"], [19, "换乘 T5", "Catch Train T5"], [20, "回到 Central", "Back to Central"]]}, {"dz": "时间核对、站内引导、选出口、台阶、抵达 C 站台。", "de": "Time check, guidance, exit choice, steps, arrive at Stand C.", "s": [[21, "在 Central 换乘", "Transfer at Central"], [22, "前往公交站", "Head to the buses"], [23, "找一个地标", "Find a landmark"], [24, "两个出口", "Two ways out"], [25, "乘扶梯上楼", "Take the escalator"], [26, "乘电梯", "Take the lift"], [27, "右转", "Turn right"], [28, "穿过马路", "Cross to Stand C"], [29, "你在 C 站台", "You’re at Stand C"]]}, {"dz": "等车、公交延误、下一步、留下或换乘、下车。", "de": "Wait, delayed bus, next move, stay or switch, get off.", "s": [[30, "等 343 路", "Waiting for Bus 343"], [31, "343 路延误", "Bus 343 delayed"], [32, "选择下一步", "Pick your next move"], [33, "留在 C 站台", "Stay at Stand C"], [34, "在 Lakeside 下车", "Get off at Lakeside"], [36, "留下还是换乘？", "Stay or switch?"], [37, "走向 D 站台", "Walk to Stand D"], [38, "410 路 3 分钟后到", "Bus 410 in 3 min"]]}, {"dz": "到达确认。", "de": "Arrival confirmation.", "s": [[35, "你到了", "You made it"]]}];</script>
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)};
+  var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  var root=document.documentElement;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine=window.matchMedia&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  var hasIO='IntersectionObserver' in window;
+  function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+  root.classList.add('js');
+
+  function setLang(l){
+    root.classList.toggle('en',l==='en');root.setAttribute('lang',l==='en'?'en':'zh-CN');
+    $('#l-zh').setAttribute('aria-pressed',l==='zh');$('#l-en').setAttribute('aria-pressed',l==='en');store('tc-lang',l);
+  }
+  $('#l-zh').onclick=function(){setLang('zh')};$('#l-en').onclick=function(){setLang('en')};
+  setLang(store('tc-lang')==='en'?'en':'zh');
+
+  /* chapters */
+  var secs=$$('section[data-nav]'),rail=$('#rail'),dot=$('#rail-dot'),mlist=$('#menu-list');
+  function pair(s){var p=s.split('|');return '<span class="zh">'+p[0]+'</span><span class="en">'+p[1]+'</span>'}
+  secs.forEach(function(s,i){
+    var li=document.createElement('li');li.innerHTML='<button type="button">'+pair(s.dataset.nav)+'</button>';
+    li.firstChild.onclick=function(){go(s)};rail.appendChild(li);
+    var mi=document.createElement('li');mi.innerHTML='<button type="button"><small>'+('0'+i).slice(-2)+'</small>'+pair(s.dataset.nav)+'</button>';
+    mi.firstChild.onclick=function(){closeMenu();setTimeout(function(){go(s)},250)};mlist.appendChild(mi);
+  });
+  function go(el){window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-64,behavior:reduce?'auto':'smooth'})}
+  var menu=$('#menu');function closeMenu(){menu.classList.remove('open')}
+  $('#menu-open').onclick=function(){menu.classList.add('open')};$('#menu-close').onclick=closeMenu;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeMenu();var l=$('.lb');if(l)l.remove()}});
+  var lis=$$('li',rail),hero=$('#hero'),prog=$('#prog'),railnav=$('#railnav'),tick=false;
+  function onScroll(){
+    if(tick)return;tick=true;
+    requestAnimationFrame(function(){
+      tick=false;var y=window.scrollY,h=root.scrollHeight-window.innerHeight;
+      prog.style.setProperty('--p',h>0?Math.min(1,y/h):0);
+      var cur=0;secs.forEach(function(s,i){if(s.getBoundingClientRect().top<window.innerHeight*.38)cur=i});
+      lis.forEach(function(l,i){l.classList.toggle('on',i===cur)});
+      if(lis[cur])dot.style.transform='translateY('+(lis[cur].offsetTop+6)+'px)';
+      railnav.classList.toggle('away',hero.getBoundingClientRect().bottom>window.innerHeight*.6);
+    });
+  }
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+
+  /* rail fisheye (shared with the other portfolios) */
+  (function(){
+    if(reduce)return;
+    function reset(){railnav.classList.toggle('hot',false);lis.forEach(function(li){li.style.transform='';li.style.opacity='';li.classList.toggle('near',false)})}
+    rail.addEventListener('mousemove',function(e){
+      railnav.classList.add('hot');
+      lis.forEach(function(li){
+        var r=li.getBoundingClientRect(),d=(e.clientY-(r.top+r.height/2))/r.height,f=Math.max(0,1-Math.abs(d)/3);
+        li.style.transform='translateX('+(f*12).toFixed(1)+'px) translateZ('+(f*70).toFixed(1)+'px) rotateX('+Math.max(-50,Math.min(50,d*-11)).toFixed(1)+'deg)';
+        li.style.opacity=(.35+f*.65).toFixed(2);li.classList.toggle('near',f>.66);
+      });
+    });
+    rail.addEventListener('mouseleave',reset);
+  })();
+
+  /* heading sweep */
+  var heads=$$('.head');
+  if(hasIO){var hio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');hio.unobserve(e.target)}})},{threshold:.4});heads.forEach(function(h){hio.observe(h)})}
+  else heads.forEach(function(h){h.classList.add('in')});
+
+  /* bar charts grow when they scroll into view */
+  $$('.chart').forEach(function(c){
+    var go=function(){if(reduce)return;$$('.bar2 .tk i',c).forEach(function(i,n){i.animate([{transform:'scaleX(0)'},{transform:'none'}],{duration:900,delay:n*90,easing:'cubic-bezier(.22,.8,.2,1)',fill:'backwards'})})};
+    if(hasIO){var o=new IntersectionObserver(function(es){if(es[0].isIntersecting){go();o.disconnect()}},{threshold:.4});o.observe(c)}else go();
+  });
+
+  /* count-up */
+  if(!reduce&&hasIO){
+    var cio=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(!e.isIntersecting)return;cio.unobserve(e.target);var el=e.target,to=+el.dataset.c;if(!to)return;var t0=performance.now();
+      (function f(t){var p=Math.min(1,(t-t0)/1000);el.firstChild.nodeValue=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0);
+    })},{threshold:.6});
+    $$('[data-c]').forEach(function(el){if(el.firstChild&&el.firstChild.nodeType===3)cio.observe(el)});
+  }
+
+  /* lightbox */
+  function zoom(src){
+    var d=document.createElement('div');d.className='lb';d.innerHTML='<img src="'+src+'" alt=""><button type="button">✕</button>';
+    d.onclick=function(){d.remove()};document.body.appendChild(d);
+  }
+  document.addEventListener('click',function(e){
+    var z=e.target.closest&&e.target.closest('[data-zoom]');if(z){e.preventDefault();zoom(z.dataset.zoom)}
+  });
+
+  /* screen explorer */
+  var GROUPS=window.TC_GROUPS||[];
+  var rail2=$('#prail'),tabs=$$('#gtabs button'),gd=$('#gdesc');
+  function showGroup(i){
+    tabs.forEach(function(t,j){t.setAttribute('aria-pressed',i===j)});
+    var g=GROUPS[i];if(!g)return;
+    gd.innerHTML='<span class="zh">'+g.dz+'</span><span class="en">'+g.de+'</span>';
+    rail2.innerHTML=g.s.map(function(n){var id=('0'+n[0]).slice(-2);
+      return '<figure><div class="phone" data-zoom="demo/screens/'+id+'.webp" data-cur="SCREEN '+id+'"><img src="demo/screens/'+id+'.webp" alt="Screen '+id+'" loading="lazy"><span class="no">'+id+'</span></div><figcaption><span class="zh">'+n[1]+'</span><span class="en">'+n[2]+'</span></figcaption></figure>'}).join('');
+    rail2.scrollLeft=0;
+  }
+  tabs.forEach(function(t,i){t.onclick=function(){showGroup(i)}});
+  if(GROUPS.length)showGroup(0);
+
+  /* findings filter */
+  var fb=$$('#flt button'),rows=$$('#fnd tbody tr');
+  fb.forEach(function(b){b.onclick=function(){
+    fb.forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+    rows.forEach(function(r){var f=b.dataset.f;r.hidden=!(f==='all'||(f==='hi'&&(r.dataset.sev==='1'||r.dataset.sev==='2'))||(f==='lo'&&(r.dataset.sev==='3'||r.dataset.sev==='4')))});
+  }});
+
+  /* poster: a warm glow and a slight parallax follow the pointer */
+  var bn=$('#hero'),bi=$('#bn-img');
+  if(bn&&!reduce&&fine){
+    bn.addEventListener('mousemove',function(e){
+      var r=bn.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      bn.style.setProperty('--mx',(x*100)+'%');bn.style.setProperty('--my',(y*100)+'%');
+      bi.style.transform='scale(1.04) translate('+((x-.5)*-12)+'px,'+((y-.5)*-6)+'px)';
+    },{passive:true});
+    bn.addEventListener('mouseleave',function(){bi.style.transform=''});
+  }
+
+  /* ---------- pointer: a stop marker that follows, counts down when it waits, and drops a stop on click ---------- */
+  if(!reduce&&fine){
+    var cv=$('#tcv'),cx=cv.getContext('2d'),td=$('#tdot'),chip=$('#tchip');
+    var dpr=Math.min(2,devicePixelRatio||1);
+    function size(){cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+    var mx=-100,my=-100,rx=-100,ry=-100,act=false,still=0,hover=false,ripples=[],lastDone=0;
+    var SEL='a,button,input,[data-zoom],.ncard,.fig,.tphone';
+    function labelFor(t){
+      var d=t.closest('[data-cur]');if(d)return d.dataset.cur;
+      var en=root.classList.contains('en');
+      if(t.closest('[data-zoom]'))return en?'ZOOM':'放大';
+      if(t.closest('a'))return en?'OPEN':'打开';
+      if(t.closest('.gtabs,#flt,.seg'))return en?'SWITCH':'切换';
+      return en?'TAP':'点击';
+    }
+    addEventListener('mousemove',function(e){
+      mx=e.clientX;my=e.clientY;still=performance.now();
+      if(!act){act=true;rx=mx;ry=my;td.classList.add('on')}
+      var tg=e.target.closest?e.target.closest(SEL):null;
+      if(tg&&tg.closest('.rail,.menu'))tg=null;
+      hover=!!tg;td.classList.toggle('hot',hover);
+      if(tg){chip.textContent=labelFor(tg);chip.classList.add('on')}else chip.classList.remove('on');
+    },{passive:true});
+    document.addEventListener('mouseleave',function(){td.classList.remove('on');chip.classList.remove('on')});
+    document.addEventListener('mouseenter',function(){if(act)td.classList.add('on')});
+    addEventListener('mousedown',function(e){ripples.push({x:e.clientX,y:e.clientY,t:performance.now()})});
+    (function loop(t){
+      requestAnimationFrame(loop);
+      rx+=(mx-rx)*.2;ry+=(my-ry)*.2;
+      td.style.transform='translate('+mx+'px,'+my+'px)';
+      chip.style.transform='translate('+(mx+18)+'px,'+(my+16)+'px)';
+      cx.clearRect(0,0,innerWidth,innerHeight);
+      if(act){
+        /* trailing ring: soft, follows with a little lag */
+        cx.lineWidth=1.5;cx.strokeStyle='rgba(240,127,30,.55)';cx.beginPath();cx.arc(rx,ry,hover?19:15,0,6.283);cx.stroke();
+        /* waiting: a countdown arc fills while the pointer rests, like the departure countdown in the product */
+        var idle=t-still-700;
+        if(idle>0&&!hover){
+          var p=Math.min(1,idle/2200);
+          cx.lineWidth=3;cx.strokeStyle='rgba(240,127,30,.95)';cx.beginPath();cx.arc(mx,my,15,-1.5708,-1.5708+6.283*p);cx.stroke();
+          if(p>=1&&t-lastDone>2600){lastDone=t;ripples.push({x:mx,y:my,t:t,soft:1});still=t+500}
+        }
+      }
+      for(var r=ripples.length-1;r>=0;r--){var rp=ripples[r],ra=(t-rp.t)/(rp.soft?800:600);if(ra>=1){ripples.splice(r,1);continue}
+        cx.lineWidth=rp.soft?2:2.5;cx.strokeStyle='rgba(240,127,30,'+((1-ra)*(rp.soft?.5:.75))+')';cx.beginPath();cx.arc(rp.x,rp.y,8+ra*(rp.soft?34:52),0,6.283);cx.stroke()}
+    })(0);
+  }
+})();
+
+</script>
