@@ -2,7 +2,7 @@
 
 **Designing a decision layer for the three minutes that decide a commute.**
 
-**Portfolio:** [View the portfolio](https://katherine0292.github.io/transfer-coach-final-prototype/portfolio/) · [page source](portfolio/)
+**Portfolio:** [View the portfolio](https://katherine0292.github.io/Transfer-Coach/portfolio/) · [page source](portfolio/)
 
 An independent, commissioned UX project for TripView: research, interaction design, a 38-screen high-fidelity prototype, and a three-method evaluation for a mobile feature that helps commuters decide what to do during a public transport transfer, especially when something goes wrong.
 
