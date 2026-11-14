@@ -1,0 +1,395 @@
+1
+00:00:00,550 --> 00:00:05,181
+Welcome to Transfer Coach. This complete walkthrough explores all thirty-eight screens:
+
+2
+00:00:05,181 --> 00:00:09,392
+planning, station guidance, and recovery when a journey goes wrong.
+
+3
+00:00:09,392 --> 00:00:11,918
+All journey information is demo data.
+
+4
+00:00:13,150 --> 00:00:16,961
+Start by planning a trip. Origin, destination, and arrive-by time appear
+
+5
+00:00:16,961 --> 00:00:21,465
+together, so the journey is organised around when you need to be there.
+
+6
+00:00:22,683 --> 00:00:27,156
+Open the preference chip. Balanced, Fastest, and Step-free make the main
+
+7
+00:00:27,156 --> 00:00:29,596
+trade-offs visible before the journey begins.
+
+8
+00:00:32,617 --> 00:00:37,202
+The transport filter offers all transport, rail only, road only, and
+
+9
+00:00:37,202 --> 00:00:41,371
+no ferries. These are prototype screens showing the intended choices.
+
+10
+00:00:44,383 --> 00:00:47,923
+Find routes. Each option leads with the arrival time at Main
+
+11
+00:00:47,923 --> 00:00:51,142
+Hall, followed by transfer time and the number of changes.
+
+12
+00:00:52,350 --> 00:00:56,305
+Select the train and bus route. The overview breaks the trip
+
+13
+00:00:56,305 --> 00:01:00,979
+into walking, train, transfer, and bus stages, with one clear action to start.
+
+14
+00:01:02,183 --> 00:01:05,519
+The Alerts tab shows disruptions with their impact on this journey.
+
+15
+00:01:05,519 --> 00:01:09,461
+An alert is useful when it explains what changes for the person travelling.
+
+16
+00:01:12,483 --> 00:01:16,241
+Start the trip. The walking screen combines a highlighted route, walking
+
+17
+00:01:16,241 --> 00:01:20,683
+time, and one instruction card to keep the next action easy to scan.
+
+18
+00:01:21,883 --> 00:01:26,176
+At the station, a section diagram and plain instructions help locate
+
+19
+00:01:26,176 --> 00:01:31,249
+the platform. This replaces technical level codes with directions that match the surroundings.
+
+20
+00:01:32,450 --> 00:01:36,356
+The waiting screen separates two questions: when does the train leave,
+
+21
+00:01:36,356 --> 00:01:38,842
+and when will I reach the event?
+
+22
+00:01:38,842 --> 00:01:40,972
+Departure and destination arrival stay distinct.
+
+23
+00:01:42,183 --> 00:01:45,624
+After boarding, the stop list marks the journey stage and the
+
+24
+00:01:45,624 --> 00:01:49,378
+stop to leave at. The arrival time remains available throughout the ride.
+
+25
+00:01:50,583 --> 00:01:53,017
+At Central, three numbers explain the transfer:
+
+26
+00:01:53,017 --> 00:01:56,840
+the bus leaves in six minutes, the walk takes three, leaving
+
+27
+00:01:56,840 --> 00:01:58,231
+three minutes to spare.
+
+28
+00:01:59,450 --> 00:02:03,198
+Continue to station guidance. A section diagram connects the platform to
+
+29
+00:02:03,198 --> 00:02:07,286
+the bus stand, while the instruction names the sign to look for.
+
+30
+00:02:08,517 --> 00:02:11,782
+If the position seems wrong, use Fix my position.
+
+31
+00:02:11,782 --> 00:02:16,861
+Matching a visible landmark offers a manual fallback when indoor location cannot be trusted.
+
+32
+00:02:18,083 --> 00:02:21,237
+The route offers two ways out. Both show a walking time,
+
+33
+00:02:21,237 --> 00:02:24,678
+allowing the stairs and escalator route to be compared with the lift.
+
+34
+00:02:25,883 --> 00:02:28,141
+Choose Exit Two to preview the lift.
+
+35
+00:02:28,141 --> 00:02:32,011
+The step-free alternative uses the same instruction pattern as the other route.
+
+36
+00:02:33,217 --> 00:02:37,017
+For this demonstration, switch to the stairs and escalator route.
+
+37
+00:02:37,017 --> 00:02:41,577
+One pictogram, one short instruction, and a step count guide the movement.
+
+38
+00:02:42,783 --> 00:02:45,762
+After changing levels, turn right after the ticket gates.
+
+39
+00:02:45,762 --> 00:02:49,734
+The bold arrow and exit sign give a concrete feature to match.
+
+40
+00:02:50,950 --> 00:02:54,306
+Next, cross to Stand C. The final distance and the stand
+
+41
+00:02:54,306 --> 00:02:57,052
+sign make the last part of the transfer specific.
+
+42
+00:02:58,283 --> 00:03:01,012
+The confirmation says, You are at Stand C.
+
+43
+00:03:01,012 --> 00:03:05,447
+It confirms the location without claiming that the transfer is complete before boarding.
+
+44
+00:03:06,650 --> 00:03:10,712
+Now wait for Bus Three Forty-Three. The countdown, stand, and destination
+
+45
+00:03:10,712 --> 00:03:15,144
+arrival are visible together, with I missed it available as a fallback.
+
+46
+00:03:16,350 --> 00:03:19,586
+Board the bus. The next-stop display names Lakeside and connects the
+
+47
+00:03:19,586 --> 00:03:21,939
+ride to the final walk to Main Hall.
+
+48
+00:03:23,150 --> 00:03:27,146
+Confirm arrival at the hall. The success state appears at the
+
+49
+00:03:27,146 --> 00:03:31,869
+destination, after the trip is complete. Next, we will test the disruption branches.
+
+50
+00:03:33,083 --> 00:03:36,659
+Trigger a three-minute train delay. The original departure is struck through,
+
+51
+00:03:36,659 --> 00:03:40,560
+the new time is shown, and the effect on arrival is included.
+
+52
+00:03:41,783 --> 00:03:45,468
+Compare routes instead of waiting automatically. The bus and train options
+
+53
+00:03:45,468 --> 00:03:48,482
+are presented side by side with their arrival times.
+
+54
+00:03:49,683 --> 00:03:53,372
+Choose the train alternative. The recovery screen identifies the same platform
+
+55
+00:03:53,372 --> 00:03:55,719
+and the wait for the next service.
+
+56
+00:03:58,750 --> 00:04:02,542
+Now simulate a missed train. Recovery starts with two ranked next
+
+57
+00:04:02,542 --> 00:04:05,990
+moves, each showing arrival time and minutes before the event.
+
+58
+00:04:07,217 --> 00:04:10,100
+The other-option link keeps the later train available.
+
+59
+00:04:10,100 --> 00:04:14,425
+Recovery should preserve a clear choice rather than force a single recommendation.
+
+60
+00:04:17,450 --> 00:04:21,066
+Choose the direct bus this time. Selecting the route starts guidance
+
+61
+00:04:21,066 --> 00:04:24,681
+to Stand A immediately, avoiding a dead end after the decision.
+
+62
+00:04:25,883 --> 00:04:30,343
+At Stand A, the bus number, departure countdown, and arrival time
+
+63
+00:04:30,343 --> 00:04:32,776
+confirm the replacement service before boarding.
+
+64
+00:04:35,783 --> 00:04:40,174
+Simulate passing Central. The recovery screen names the current location, explains
+
+65
+00:04:40,174 --> 00:04:43,368
+how to return, and gives the next action.
+
+66
+00:04:44,583 --> 00:04:48,769
+Continue to the return train. The platform, countdown, and direction of
+
+67
+00:04:48,769 --> 00:04:52,954
+travel lead the screen, helping the traveller act after the mistake.
+
+68
+00:04:54,183 --> 00:04:58,100
+The next screen confirms the ride back to Central and shows
+
+69
+00:04:58,100 --> 00:05:01,661
+the revised arrival time. Recovery includes reassurance about the outcome.
+
+70
+00:05:04,683 --> 00:05:09,160
+Trigger an eight-minute bus delay. The new departure, original time, and
+
+71
+00:05:09,160 --> 00:05:12,822
+delay amount appear together. Arrival already includes the delay.
+
+72
+00:05:14,050 --> 00:05:17,486
+Compare routes. Staying at Stand C and walking to Stand D
+
+73
+00:05:17,486 --> 00:05:20,609
+can be judged by their waits and destination arrival times.
+
+74
+00:05:21,817 --> 00:05:25,442
+First, stay at Stand C. The interface confirms the original option
+
+75
+00:05:25,442 --> 00:05:28,738
+with its updated departure and the arrival it leads to.
+
+76
+00:05:31,750 --> 00:05:35,420
+The dedicated Stay or switch scenario brings the same comparison into
+
+77
+00:05:35,420 --> 00:05:38,090
+view when a faster nearby service is available.
+
+78
+00:05:39,317 --> 00:05:42,735
+Choose Stand D. The selected alternative opens a walking map immediately,
+
+79
+00:05:42,735 --> 00:05:46,153
+with a time estimate and the taxi bay as a landmark.
+
+80
+00:05:47,383 --> 00:05:51,773
+At the new stand, confirm Bus Four Ten, the stand letter,
+
+81
+00:05:51,773 --> 00:05:54,567
+departure time, and destination arrival before boarding.
+
+82
+00:05:57,583 --> 00:05:59,851
+The screen index can revisit any state.
+
+83
+00:05:59,851 --> 00:06:03,737
+Return to the bus waiting screen to test the manual missed-service path.
+
+84
+00:06:04,950 --> 00:06:07,675
+Select I missed it. The app offers a new choice:
+
+85
+00:06:07,675 --> 00:06:11,489
+walk to Bus Four Ten or remain at the same stand for another service.
+
+86
+00:06:12,717 --> 00:06:15,574
+The other-option link retains the same-stand route.
+
+87
+00:06:15,574 --> 00:06:20,064
+Both recovery paths remain available and identify the resulting arrival time.
+
+88
+00:06:23,083 --> 00:06:27,306
+Select the earlier-arriving bus card. The choice takes the traveller straight
+
+89
+00:06:27,306 --> 00:06:30,377
+into walking guidance, using the same recovery pattern.
+
+90
+00:06:36,983 --> 00:06:39,763
+Finally, test the Lost in the station scenario.
+
+91
+00:06:39,763 --> 00:06:43,584
+The landmark screen is also available from this disruption control, as
+
+92
+00:06:43,584 --> 00:06:45,669
+well as from the route itself.
+
+93
+00:06:48,683 --> 00:06:52,161
+Show hotspots reveals the tappable regions for review.
+
+94
+00:06:52,161 --> 00:06:57,377
+The prototype also provides Back, Next, Restart, and a complete screen index.
+
+95
+00:07:11,183 --> 00:07:16,269
+All thirty-eight screens have now been explored, including all six disruption
+
+96
+00:07:16,269 --> 00:07:20,892
+scenarios. Planning, guidance, and recovery share a consistent next-action structure.
+
+97
+00:07:22,117 --> 00:07:25,787
+Restart returns to the welcome screen. Transfer Coach keeps the key
+
+98
+00:07:25,787 --> 00:07:29,457
+questions visible: can I make the connection, where do I go,
+
+99
+00:07:29,457 --> 00:07:31,458
+and what should I do next?

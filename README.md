@@ -1,20 +1,76 @@
+<div align="center">
+
 # Transfer Coach
 
-**Designing a decision layer for the three minutes that decide a commute.**
+**Make the transfer.**
 
-**Portfolio:** [View the portfolio](https://katherine0292.github.io/Transfer-Coach/portfolio/) · [page source](portfolio/)
+A mobile decision layer for the minutes between services: know how much time you have, find your next platform or stand, and recover when the journey changes.
 
-An independent, commissioned UX project for TripView: research, interaction design, a 38-screen high-fidelity prototype, and a three-method evaluation for a mobile feature that helps commuters decide what to do during a public transport transfer, especially when something goes wrong.
+**Independent UX and interaction design commission · Katherine Lin**
+
+[**Explore the Transfer Coach portfolio**](https://katherine0292.github.io/Transfer-Coach/portfolio/)
+
+[Try the interactive prototype](https://katherine0292.github.io/Transfer-Coach/prototype/#screen-01) · [Watch the complete English walkthrough](https://katherine0292.github.io/Transfer-Coach/assets/recordings/transfer-coach-walkthrough-1080p.mp4)
+
+<img src="portfolio/media/poster.webp" width="1100" alt="Transfer Coach: three phone screens show transfer timing, station guidance and a stay-or-switch decision above an orange ribbon road and a bus.">
+
+</div>
+
+## At a glance
 
 | | |
-|---|---|
-| **Role** | UX researcher and interaction designer, end to end (research, concept, prototype, evaluation) |
-| **Client** | TripView (Sydney public transport journey planner) |
-| **Timeline** | 2026 |
-| **Deliverables** | Research synthesis, persona and journey map, two concepts, low / mid / high-fidelity prototypes, interactive web prototype, evaluation report |
-| **Focus areas** | Decision support under time pressure, trust in real-time information, error recovery, explainable status design |
+| --- | --- |
+| **Problem** | A delay, missed service or unfamiliar interchange leaves commuters unsure whether they can catch the next service, arrive on time, or choose a better option. |
+| **Audience** | Sydney public transport commuters making time-sensitive transfers, including people navigating unfamiliar stations. |
+| **Solution** | Separate departure and destination clocks, landmark-based guidance, and ranked recovery options that lead straight into the next action. |
+| **My role** | End-to-end research, synthesis, concept development, interaction design, prototyping and evaluation for a TripView feature commission. |
+| **Evidence** | Desk research, commuter interviews and affinity mapping; expert heuristic review, seven scenario-based usability sessions and two structured experience journals. |
+| **Status** | A 38-screen high-fidelity browser prototype with a complete journey and six disruption scenarios. Journey data are simulated; the final design has not been retested with users. |
 
-![Transfer Coach final prototype overview](assets/prototypes/high-fidelity/final-prototype-overview.jpg)
+## The experience
+
+Plan around the event, follow the interchange one step at a time, and keep a clear way forward when a connection fails.
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/01-plan-route.gif" width="220" alt="Transfer Coach: planning a trip, inspecting preferences and modes, and comparing arrival times.">
+<p><strong>Plan for when you need to arrive</strong></p>
+<p>Arrive-by time, travel preferences, transport modes and routes led by arrival time.</p>
+</td>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/02-station-guidance.gif" width="220" alt="Transfer Coach: transfer timing, landmark matching, lift and escalator alternatives, and directions to Stand C.">
+<p><strong>Find the next platform or stand</strong></p>
+<p>Time to spare, visible landmarks, exit choices and one instruction at a time.</p>
+</td>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/03-arrive.gif" width="220" alt="Transfer Coach: waiting for the bus, following the final stop and confirming arrival at Main Hall.">
+<p><strong>Keep the destination in view</strong></p>
+<p>Separate departure and arrival clocks, a clear trip stage and confirmation at the destination.</p>
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/04-train-recovery.gif" width="220" alt="Transfer Coach: a delayed or missed train, comparing alternatives, and starting guidance to a direct bus.">
+<p><strong>Recover from a missed connection</strong></p>
+<p>Revised times, comparable alternatives and guidance that starts with the choice.</p>
+</td>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/05-wrong-stop.gif" width="220" alt="Transfer Coach: recognising a wrong stop, finding the return train and getting back to Central.">
+<p><strong>Get back after a wrong stop</strong></p>
+<p>The current location, the return platform and the new arrival time stay explicit.</p>
+</td>
+<td width="33%" valign="top" align="center">
+<img src="assets/recordings/06-bus-recovery.gif" width="220" alt="Transfer Coach: a delayed bus, staying at Stand C or switching to Stand D, and confirming Bus 410.">
+<p><strong>Know when it pays to switch</strong></p>
+<p>Compare waiting with walking to another stand, then confirm the replacement service.</p>
+</td>
+</tr>
+</table>
+
+The previews show actual browser operations. The [complete English walkthrough](https://katherine0292.github.io/Transfer-Coach/assets/recordings/transfer-coach-walkthrough-1080p.mp4) covers all 38 screens and all six disruption scenarios in Full HD (1920 × 1080), with narration, embedded English captions, original background music and interaction sounds. [Download the English subtitles](assets/recordings/transfer-coach-english.srt).
+
+The prototype demonstrates interaction design using scripted journey data. Planning fields and preference screens illustrate the intended choices; no live route calculation, vehicle feed or indoor positioning service is connected.
 
 ## The problem
 
