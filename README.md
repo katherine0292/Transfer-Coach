@@ -2,6 +2,8 @@
 
 **Designing a decision layer for the three minutes that decide a commute.**
 
+**Portfolio page:** [Transfer Coach case study](https://claude.ai/artifact/2ezivaYUCpNQuxUxtvbEx7) · [page source](portfolio/)
+
 An independent, commissioned UX project for TripView: research, interaction design, a 38-screen high-fidelity prototype, and a three-method evaluation for a mobile feature that helps commuters decide what to do during a public transport transfer, especially when something goes wrong.
 
 | | |
