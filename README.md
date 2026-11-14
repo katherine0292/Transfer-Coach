@@ -94,7 +94,7 @@ No model was trained and no live feed is connected. The prototype demonstrates t
 
 ```
 README.md
-docs/                       Case study, written in sequence
+docs/                       Project documents, in sequence
 prototype/                  Interactive web prototype (open index.html)
 assets/
   research/                 Affinity map, user journey map
