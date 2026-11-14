@@ -68,7 +68,7 @@ Plan around the event, follow the interchange one step at a time, and keep a cle
 </tr>
 </table>
 
-The previews show actual browser operations. The [complete English walkthrough](https://katherine0292.github.io/Transfer-Coach/assets/recordings/transfer-coach-walkthrough-1080p.mp4) covers all 38 screens and all six disruption scenarios in Full HD (1920 × 1080), with narration, embedded English captions, original background music and interaction sounds. [Download the English subtitles](assets/recordings/transfer-coach-english.srt).
+The previews show actual browser operations. The [complete English walkthrough](https://katherine0292.github.io/Transfer-Coach/assets/recordings/transfer-coach-walkthrough-1080p.mp4) covers all 38 screens and all six disruption scenarios in Full HD (1920 × 1080), with embedded English captions, original background music and interaction sounds. [Download the English subtitles](assets/recordings/transfer-coach-english.srt).
 
 The prototype demonstrates interaction design using scripted journey data. Planning fields and preference screens illustrate the intended choices; no live route calculation, vehicle feed or indoor positioning service is connected.
 
@@ -133,18 +133,6 @@ You can also open the file directly in a browser. Use the **Test a disruption** 
 - **13 recommendations** came out of usability testing. **8** are fully built into the high-fidelity prototype, **4** are partly built, **1** (editable arrive-by preference) is open.
 - The mid-fidelity prototype worked when the trip went to plan and failed when reality changed: no delayed state, an early "Transfer complete", and backup routes that were hard to compare.
 - Experience journals showed residual stress that usability testing did not: time shown against the bus instead of the event, uncertainty about whether a delay was already included, and unclear trip stage.
-
-## The AI product angle
-
-Transfer Coach is designed as the interface for a prediction system, even though the prototype uses scripted data. The design questions that matter for AI-assisted products are all present:
-
-- **Calibrated trust.** A single label such as "High confidence" was not believed when it contradicted what people could see. The final design shows the evidence instead: live label, update time, delay included.
-- **Explainable status.** Every status says what it is based on and what it means for the destination, not only the next vehicle.
-- **Graceful failure.** Manual fallbacks ("I missed it", "Fix my position") stay available whenever live data and the real world disagree.
-- **Proactive but not noisy.** Alerts explain impact on this trip and offer the next action, instead of listing network disruptions.
-- **Personalisation hooks.** The first concept proposed learning each commuter's walking and interchange pace and preparing a backup route before a connection fails. These are documented as next-step opportunities in [docs/07-outcomes-and-next-steps.md](docs/07-outcomes-and-next-steps.md).
-
-No model was trained and no live feed is connected. The prototype demonstrates the interaction design, not predictive accuracy.
 
 ## Repository guide
 
