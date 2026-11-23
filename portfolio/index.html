@@ -35,7 +35,7 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;paddin
 a{color:inherit}
 :focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:6px}
 h1,h2,h3,h4,p,ul,ol,figure,dl{margin:0}
-h1,h2,h3{font-weight:300;letter-spacing:-.02em;text-wrap:balance}
+h1,h2,h3{font-weight:300;letter-spacing:-.02em;text-wrap:wrap}
 html:not(.en) h1,html:not(.en) h2,html:not(.en) h3{letter-spacing:-.005em;font-weight:400;word-break:keep-all;overflow-wrap:anywhere}
 .lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);font-weight:500;display:block}
 html:not(.en) .lbl{letter-spacing:.08em}
@@ -106,16 +106,16 @@ section.ch{position:relative;padding-block:clamp(40px,4.8vw,70px)}
 section.ch.alt{background:var(--paper-2)}
 .head{display:grid;gap:10px;margin-bottom:clamp(22px,2.8vw,36px)}
 .head .row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.head h2{font-size:clamp(24px,2.6vw,35px);line-height:1.22;max-width:28ch;position:relative;padding-bottom:14px}
-html:not(.en) .head h2{line-height:1.38;max-width:24em;font-size:clamp(22px,2.4vw,31px)}
+.head h2{font-size:clamp(24px,2.6vw,35px);line-height:1.22;position:relative;padding-bottom:14px}
+html:not(.en) .head h2{line-height:1.38;font-size:clamp(22px,2.4vw,31px)}
 .head h2::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:64px;background:linear-gradient(90deg,var(--acc),var(--acc-3));transform-origin:0 50%}
 .js .head h2::after{transform:scaleX(0);transition:transform 1s var(--ease)}
 .js .head.in h2::after{transform:scaleX(1)}
-.head .lede{font-size:15.5px;color:var(--ink-2);max-width:70ch;margin-top:4px}
+.head .lede{font-size:15.5px;color:var(--ink-2);margin-top:4px}
 .blk{margin-top:clamp(36px,4.6vw,64px)}
 .blk:first-child{margin-top:0}
-.h2{font-size:clamp(21px,2.2vw,29px);font-weight:400;letter-spacing:-.01em;line-height:1.32;margin:8px 0 14px;max-width:28em}
-.para{font-size:clamp(15px,1.2vw,16.5px);color:var(--ink-2);line-height:1.75;max-width:74ch}
+.h2{font-size:clamp(21px,2.2vw,29px);font-weight:400;letter-spacing:-.01em;line-height:1.32;margin:8px 0 14px}
+.para{font-size:clamp(15px,1.2vw,16.5px);color:var(--ink-2);line-height:1.75}
 .para+.para{margin-top:12px}
 .para b{color:var(--ink);font-weight:500}
 .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(18px,3vw,44px)}
@@ -128,8 +128,8 @@ html:not(.en) .insight{font-weight:400}
 .qband{color:#fff;padding-block:clamp(44px,5.5vw,76px);background:linear-gradient(120deg,var(--deep) 0%,var(--deep-2) 62%,#9a5fd8 100%);position:relative;overflow:hidden}
 .qband::after{content:"";position:absolute;right:-8%;top:-60%;width:46%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(231,184,244,.5),transparent 68%);pointer-events:none}
 .qband .lbl{color:rgba(255,255,255,.75)}
-.qband h2{font-size:clamp(21px,2.4vw,32px);font-weight:400;line-height:1.4;margin:12px 0 16px;max-width:26em;letter-spacing:-.01em}
-.qband p{color:rgba(255,255,255,.8);font-size:clamp(14.5px,1.2vw,16.5px);max-width:60ch}
+.qband h2{font-size:clamp(21px,2.4vw,32px);font-weight:400;line-height:1.4;margin:12px 0 16px;letter-spacing:-.01em}
+.qband p{color:rgba(255,255,255,.8);font-size:clamp(14.5px,1.2vw,16.5px)}
 
 /* flow stepper */
 .flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:0;position:relative}
@@ -147,7 +147,7 @@ html:not(.en) .insight{font-weight:400}
 .stats>div{padding:20px 16px 22px 0;border-bottom:1px solid var(--line);min-width:0}
 .stats>div:not(:nth-child(4n+1)){padding-left:20px;border-left:1px solid var(--line)}
 .stats b,.bnum b{display:block;font-size:clamp(34px,3.6vw,48px);font-weight:300;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.stats p,.bnum p{margin-top:10px;font-size:13.5px;color:var(--ink-2);max-width:26ch}
+.stats p,.bnum p{margin-top:10px;font-size:13.5px;color:var(--ink-2)}
 .bnum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:900px}
 .bnum b small{font-size:.38em;color:var(--acc);margin-left:3px;letter-spacing:0}
 
@@ -189,7 +189,7 @@ td b{font-weight:500}
 .fig .z{position:absolute;right:10px;bottom:10px;font-size:11px;background:rgba(17,17,20,.72);color:#fff;border-radius:99px;padding:3px 9px;opacity:0;transition:opacity .25s}
 .fig:hover .z{opacity:1}
 .fig.vid{cursor:default}
-figcaption{font-size:12.5px;color:var(--ink-2);margin-top:8px;max-width:100%;min-width:0;line-height:1.5;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin}
+figcaption{font-size:12.5px;color:var(--ink-2);margin-top:8px;max-width:100%;min-width:0;line-height:1.5;white-space:normal;overflow-wrap:anywhere}
 figcaption b{color:var(--ink);font-weight:500}
 .exh{border-radius:22px;overflow:hidden;position:relative;background:#111}
 .exh img{width:100%;height:auto}
@@ -372,6 +372,7 @@ footer .in{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;al
 @media (max-width:360px){
   .top .in{gap:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
   .top .word{font-size:12px}
+  .stats>div:nth-child(2n){padding-left:12px}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -409,7 +410,7 @@ html:not(.en) .head h2{font-weight:500}
 .head .lede{font-size:15px}
 .stats{margin-top:20px}
 .stats>div{padding:14px 14px 16px 0}
-.stats>div:not(:nth-child(4n+1)){padding-left:18px}
+@media(min-width:1101px){.stats>div:not(:nth-child(4n+1)){padding-left:18px}}
 .ctas{margin-top:18px}
 .head .row .lbl{color:var(--acc-ink);font-weight:600}
 .flow li{padding-top:30px}
@@ -444,7 +445,7 @@ html:not(.en) .qband h2{font-weight:500}
 .prail figure{flex:0 0 min(250px,64vw);scroll-snap-align:start;animation:pp .45s var(--ease) both}
 .prail figure .phone{cursor:zoom-in}
 .prail figcaption{margin-top:6px;font-size:12.5px}
-.gdesc{font-size:14px;color:var(--ink-2);max-width:70ch;margin-bottom:8px}
+.gdesc{font-size:14px;color:var(--ink-2);margin-bottom:8px}
 
 /* finding thumbnails */
 .thumbs{display:flex;gap:8px;flex-wrap:wrap}
