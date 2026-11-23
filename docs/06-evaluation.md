@@ -4,13 +4,13 @@ Three complementary evaluations, each answering a different question.
 
 | Evaluation | Prototype | Question | Evidence |
 |---|---|---|---|
-| Expert heuristic review | Mid fidelity (v2) | What are the likely problems, found cheaply and early? | Review against Nielsen's ten usability heuristics, re-checked on v3 |
+| Designer heuristic review | Mid fidelity (v2) | What are the likely problems, found cheaply and early? | Review against Nielsen's ten usability heuristics, re-checked on v3 |
 | Scenario-based usability testing | Mid fidelity (v2) | Can people complete the core transfer tasks, and where do they struggle? | 7 commuters, 3 scenarios, think-aloud, about 5 to 10 minutes each |
 | Experience evaluation | High fidelity (v3) | What does a disrupted trip feel like, and why? | 2 structured experience journals, plus 1 supporting journal from a usability session |
 
 All sessions ran on demo data. Nothing was connected to live services.
 
-## 1 · Expert heuristic review
+## 1 · Designer heuristic review
 
 Findings that shaped the first redesign:
 
@@ -19,7 +19,9 @@ Findings that shaped the first redesign:
 - Station wording was technical and text-heavy.
 - There was no "Can't find it?" escape on the station steps.
 
-The review was repeated on the high-fidelity screens after the redesign.
+The review was repeated on the high-fidelity screens after the redesign. The published sheet names “Lead designer; Evaluator A” and re-evaluates the 38-screen high-fidelity design against earlier findings. It is a designer-led review, not evidence of independent expert validation or a user retest.
+
+The archived sheet refers to three earlier usability tests, while the consolidated summary below reports seven commuters across three scenarios. These are scopes of different records, not participant groups to add together. The public records do not establish that each commuter completed all three scenarios; they should not be reported as 21 independent sessions.
 
 ## 2 · Usability testing (7 commuters, 3 scenarios)
 
@@ -46,7 +48,7 @@ The review was repeated on the high-fidelity screens after the redesign.
 
 ### What failed
 
-Trust dropped when the real world and the app disagreed. Confidence in arriving on time was 3 to 3.5 out of 5 in the delay scenario.
+Trust dropped when the real world and the app disagreed. The summary reports arrival-confidence ratings of 3 to 3.5 out of 5 in the delay scenario. The aggregation method and participant-level ratings are not published, so this should be read as a qualitative illustration, not a sample mean or a measured improvement.
 
 | # | Finding | Severity |
 |---|---|---|
@@ -62,7 +64,7 @@ Trust dropped when the real world and the app disagreed. Confidence in arriving 
 
 ### Recommendations and their status
 
-13 recommendations were produced, each linked to the findings above.
+The consolidated summary reports 13 recommendations linked to the findings above. The 8 / 4 / 1 split below describes implementation in the design, not a user-success rate or proof that the changes resolved the issues. A final-prototype retest is still needed.
 
 | Status | Count | Examples |
 |---|---|---|
