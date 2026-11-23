@@ -6,7 +6,7 @@ The design went through four versions. Each version was built to answer a specif
 |---|---|---|
 | v1 | Hand-drawn style sketches | Which screens and flows does a transfer need? |
 | v2 | Mid fidelity, 21 screens | Can people follow the transfer? (used for usability testing) |
-| v3 | High fidelity, 38 screens | Do the fixes work, and what does it feel like? (used for the experience evaluation) |
+| v3 | High fidelity, 38 screens | How are the changes experienced in a scenario? (used for experience evaluation; not a final usability retest) |
 | v4 | Final screens and interactive web prototype | Is the experience coherent end to end, including every disruption? |
 
 ## v1 · Low fidelity
@@ -32,7 +32,7 @@ Some screens were not linked, so sessions sometimes advanced screens by hand. Th
 
 ## v3 · High fidelity (38 screens)
 
-Built after the heuristic review and the first five usability sessions. The process:
+The high-fidelity redesign incorporated findings from the mid-fidelity heuristic review and usability sessions. The process:
 
 1. Collected the data sheets and transcripts from every session and summarised the feedback in one place.
 2. Annotated each mid-fidelity screen with the problems found and checked each against the heuristic review.

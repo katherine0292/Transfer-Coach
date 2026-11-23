@@ -24,7 +24,7 @@ A mobile decision layer for the minutes between services: know how much time you
 | **Audience** | Sydney public transport commuters making time-sensitive transfers, including people navigating unfamiliar stations. |
 | **Solution** | Separate departure and destination clocks, landmark-based guidance, and ranked recovery options that lead straight into the next action. |
 | **My role** | End-to-end research, synthesis, concept development, interaction design, prototyping and evaluation for a TripView feature commission. |
-| **Evidence** | Desk research, commuter interviews and affinity mapping; expert heuristic review, seven scenario-based usability sessions and two structured experience journals. |
+| **Evidence** | Desk research, commuter interviews and affinity mapping; designer heuristic review, seven scenario-based usability sessions and two structured experience journals. |
 | **Status** | A 38-screen high-fidelity browser prototype with a complete journey and six disruption scenarios. Journey data are simulated; the final design has not been retested with users. |
 
 ## The experience
@@ -125,12 +125,12 @@ You can also open the file directly in a browser. Use the **Test a disruption** 
 | Synthesis | Persona, experience story and four-phase journey map | [docs/03-persona-and-journey.md](docs/03-persona-and-journey.md) |
 | Concepts | Two concepts compared; Transfer Coach selected and extended with landmark-based guidance | [docs/04-concepts.md](docs/04-concepts.md) |
 | Prototyping | Hand-drawn low fidelity, 21-screen mid fidelity, 38-screen high fidelity, interactive web prototype | [docs/05-design-process.md](docs/05-design-process.md) |
-| Evaluation | Expert heuristic review, 7 moderated usability sessions across 3 scenarios, 2 experience journals | [docs/06-evaluation.md](docs/06-evaluation.md) |
+| Evaluation | Designer heuristic review, 7 moderated usability sessions across 3 scenarios, 2 experience journals | [docs/06-evaluation.md](docs/06-evaluation.md) |
 | Outcomes | Results, limitations and next steps | [docs/07-outcomes-and-next-steps.md](docs/07-outcomes-and-next-steps.md) |
 
 ### Evaluation at a glance
 
-- **13 recommendations** came out of usability testing. **8** are fully built into the high-fidelity prototype, **4** are partly built, **1** (editable arrive-by preference) is open.
+- **13 recommendations** are reported in the evaluation summary: **8** are fully built into the high-fidelity prototype, **4** are partly built, **1** (editable arrive-by preference) is open. These are implementation counts, not a user-success rate; the final prototype has not been retested.
 - The mid-fidelity prototype worked when the trip went to plan and failed when reality changed: no delayed state, an early "Transfer complete", and backup routes that were hard to compare.
 - Experience journals showed residual stress that usability testing did not: time shown against the bus instead of the event, uncertainty about whether a delay was already included, and unclear trip stage.
 

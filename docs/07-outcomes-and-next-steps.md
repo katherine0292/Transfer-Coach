@@ -9,7 +9,7 @@
 ## What changed in my thinking
 
 1. **From features to moments.** The design started from one real moment, the 3 to 10 minutes in which a commuter decides to run, wait or reroute, instead of from a feature list.
-2. **From opinion to evidence.** The expert review, seven usability sessions and two experience journals changed the screens four times. Each change in [06-evaluation.md](06-evaluation.md) names its source.
+2. **From opinion to evidence.** The designer heuristic review, seven usability sessions and two experience journals changed the screens four times. Each change in [06-evaluation.md](06-evaluation.md) names its source.
 3. **From usable to felt.** An app can be easy to use and still leave people anxious. Experience evaluation found stress, such as unclear delay inclusion and trip stage, that task-based testing did not.
 
 ## Product perspective: designing the interface for a prediction
